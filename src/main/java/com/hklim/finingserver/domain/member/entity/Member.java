@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +40,12 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private final List<Portfolio> portfolios = new ArrayList<>();
+
+    @Builder
+    public Member(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.role = RoleType.USER;
+    }
 }
