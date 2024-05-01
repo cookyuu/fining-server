@@ -35,10 +35,11 @@ public class AuthServiceNormal implements AuthService {
     }
 
     private void chkSignupValidation(String email) {
+        log.info("[SIGNUP PROCESS] Check Email Validation START ");
         if (memberRepository.existsByEmail(email)) {
             throw new ApplicationErrorException(ApplicationErrorType.DATA_DUPLICATED_ERROR,
-                    "Email Data is Duplicated, Please check again.");
+                    "[SIGNUP PROCESS] Email is Duplicated, Please check again.");
         }
-        log.info("[SIGNUP VALIDATION CHECK PROCESS] SUCCESS!! ");
+        log.info("[SIGNUP PROCESS] Check Email Validation END, SUCCESS! ");
     }
 }
