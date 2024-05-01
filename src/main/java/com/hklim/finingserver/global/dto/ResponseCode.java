@@ -1,4 +1,4 @@
-package com.hklim.finingserver.global;
+package com.hklim.finingserver.global.dto;
 
 public enum ResponseCode {
 
