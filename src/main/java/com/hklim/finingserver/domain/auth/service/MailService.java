@@ -52,7 +52,7 @@ public class MailService {
     }
 
     private void sendAuthEmail(String email, String authKey) {
-        String subject = "제목";
+        String subject = "[FINING] 이메일 인증을 위한 인증번호입니다.";
         String text = "메일 인증을 위한 인증번호는 " + authKey + " 입니다. <br/>";
         try {
             log.info("[SEND EMAIL AUTH-CODE PROCESS] Send email START {email : {}",email + "}");
@@ -64,7 +64,7 @@ public class MailService {
             javaMailSender.send(mimeMessage);
             log.info("[SEND EMAIL AUTH-CODE PROCESS] Send email END {email : {}",email +"}");
         } catch (MessagingException e) {
-            throw new ApplicationErrorException(ApplicationErrorType.AUTHCODE_SEND_ERROR,e.getMessage());
+            throw new ApplicationErrorException(ApplicationErrorType.AUTHCODE_SEND_ERROR, e);
         }
     }
 
@@ -73,9 +73,7 @@ public class MailService {
         try {
             redisUtil.setDataExpire(email, authKey, 60*3L);
         } catch (Exception e) {
-            // 에러 수정 필요
-            e.printStackTrace();
-            throw new ApplicationErrorException(ApplicationErrorType.DATA_STORAGE_ERROR, e.getMessage());
+            throw new ApplicationErrorException(ApplicationErrorType.DATA_STORAGE_ERROR, e);
         }
         log.info("[SEND EMAIL AUTH-CODE PROCESS] Save AuthCode END");
     }

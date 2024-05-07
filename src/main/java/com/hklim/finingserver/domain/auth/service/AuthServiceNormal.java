@@ -1,12 +1,20 @@
 package com.hklim.finingserver.domain.auth.service;
 
+import com.hklim.finingserver.domain.auth.dto.LoginRequestDto;
+import com.hklim.finingserver.domain.auth.dto.LoginResponseDto;
 import com.hklim.finingserver.domain.auth.dto.SignupRequestDto;
+import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
+import com.hklim.finingserver.global.dto.CustomUserInfo;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import com.hklim.finingserver.global.utils.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +25,8 @@ public class AuthServiceNormal implements AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -32,6 +42,28 @@ public class AuthServiceNormal implements AuthService {
         Long res = memberRepository.save(saveInfo.toEntity()).getId();
         log.info("[SIGNUP PROCESS] END");
         return res;
+    }
+
+    @Override
+    public LoginResponseDto loginNormal(LoginRequestDto loginInfo) {
+        String email = loginInfo.getEmail();
+        String password = loginInfo.getPassword();
+        Member member = memberRepository.findByEmail(email).orElseThrow(()->
+                new ApplicationErrorException(ApplicationErrorType.NO_SUCH_MEMBER_ERROR));
+        if (member == null) {
+            throw new UsernameNotFoundException("Email is not exist");
+        }
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new BadCredentialsException("Password is not matched");
+        }
+
+        CustomUserInfo userInfo = modelMapper.map(member, CustomUserInfo.class);
+
+        String accessToken = jwtUtil.createAccessToken(userInfo);
+        return LoginResponseDto.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     private void chkSignupValidation(String email) {
