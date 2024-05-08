@@ -1,6 +1,6 @@
 package com.hklim.finingserver.global.security.jwt;
 
-import com.hklim.finingserver.global.dto.CustomUserInfo;
+import com.hklim.finingserver.domain.auth.dto.JwtUserInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final CustomUserInfo user;
+    private final JwtUserInfo user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

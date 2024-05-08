@@ -1,18 +1,17 @@
 package com.hklim.finingserver.domain.auth.service;
 
+import com.hklim.finingserver.domain.auth.dto.JwtUserInfo;
 import com.hklim.finingserver.domain.auth.dto.LoginRequestDto;
 import com.hklim.finingserver.domain.auth.dto.LoginResponseDto;
 import com.hklim.finingserver.domain.auth.dto.SignupRequestDto;
 import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
-import com.hklim.finingserver.global.dto.CustomUserInfo;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +25,6 @@ public class AuthServiceNormal implements AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -57,8 +55,8 @@ public class AuthServiceNormal implements AuthService {
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new BadCredentialsException("Password is not matched");
         }
-
-        CustomUserInfo userInfo = modelMapper.map(member, CustomUserInfo.class);
+        JwtUserInfo userInfo = new JwtUserInfo();
+        userInfo.toDto(member);
 
         String accessToken = jwtUtil.createAccessToken(userInfo);
         return LoginResponseDto.builder()

@@ -1,11 +1,10 @@
 package com.hklim.finingserver.global.utils;
 
-import com.hklim.finingserver.global.dto.CustomUserInfo;
+import com.hklim.finingserver.domain.auth.dto.JwtUserInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
-import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,14 +31,18 @@ public class JwtUtil {
     * Access Token 생성
     */
 
-    public String createAccessToken(CustomUserInfo member) {
+    public String createAccessToken(JwtUserInfo member) {
         return createToken(member, accessTokenExpTime);
     }
 
     /*
     * JWT 생성
     */
-    private String createToken(CustomUserInfo member, long expiredTime) {
+    private String createToken(JwtUserInfo member, long expiredTime) {
+        log.info("Claims member id : " + member.getMemberId());
+        log.info("Claims email : " + member.getEmail());
+        log.info("Claims role : " + member.getRole());
+
         Claims claims = Jwts.claims();
         claims.put("memberId", member.getMemberId());
         claims.put("email", member.getEmail());

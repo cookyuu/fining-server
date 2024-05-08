@@ -42,7 +42,13 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5',
 			'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	// model mapper
 	implementation 'org.modelmapper:modelmapper:3.1.1'
+//
+//	// Map Struct
+//	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+//	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+//	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
 	// JUnit5
 	testImplementation("org.junit.platform:junit-platform-launcher:1.5.2")
