@@ -24,15 +24,14 @@ public class SignupRequestDto {
     private String name;
 
     @NotBlank
-    private Boolean isPetOwner;
-    @NotBlank
-    private String petType;
+    private String phoneNumber;
 
     public Member toEntity() {
         return Member.builder()
                 .email(email)
                 .password(password)
                 .name(name)
+                .phoneNumber(phoneNumber)
                 .build();
     }
 }

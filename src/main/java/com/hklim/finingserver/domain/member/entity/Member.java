@@ -32,6 +32,9 @@ public class Member extends BaseEntity {
     @NotNull
     private String name;
 
+    @NotNull
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
@@ -42,10 +45,15 @@ public class Member extends BaseEntity {
     private final List<Portfolio> portfolios = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, String name) {
+    public Member(String email, String password, String name, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.phoneNumber = phoneNumber;
         this.role = RoleType.USER;
+    }
+
+    public void updateTempPw(String tempPw) {
+        this.password = tempPw;
     }
 }
