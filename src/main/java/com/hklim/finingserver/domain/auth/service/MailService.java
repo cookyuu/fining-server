@@ -73,7 +73,7 @@ public class MailService {
         try {
             redisUtil.setDataExpire(email, authKey, 60*3L);
         } catch (Exception e) {
-            throw new ApplicationErrorException(ApplicationErrorType.DATA_STORAGE_ERROR, e);
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, e);
         }
         log.info("[SEND EMAIL AUTH-CODE PROCESS] Save AuthCode END");
     }

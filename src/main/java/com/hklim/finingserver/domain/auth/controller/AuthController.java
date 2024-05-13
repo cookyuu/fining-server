@@ -6,10 +6,7 @@ import com.hklim.finingserver.domain.auth.service.MailService;
 import com.hklim.finingserver.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -30,7 +27,7 @@ public class AuthController {
         return ResponseDto.ok("인증 번호 이메일 발송 완료");
     }
 
-    @PostMapping("/email/auth")
+    @PostMapping("/email/authentication")
     public ResponseEntity<ResponseDto<String>> authenticateEmailAuthCode(@RequestBody EmailAuthenticationRequestDto request) {
         mailService.authenticateEmail(request);
         return ResponseDto.ok("이메일 인증 완료");
@@ -38,7 +35,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<LoginResponseDto>> loginNormal(@RequestBody LoginRequestDto loginInfo) {
-        LoginResponseDto res = authServiceNormal.loginNormal(loginInfo);
+        LoginResponseDto res = authServiceNormal.login(loginInfo);
         return ResponseDto.ok(res);
+    }
+
+    @PostMapping("/inquiry/email")
+    public ResponseEntity<ResponseDto<InquiryEmailResponseDto>> inquiryEmail(@RequestBody InquiryEmailRequestDto inquiryEmailInfo) {
+        return ResponseDto.ok(authServiceNormal.inquiryEmail(inquiryEmailInfo));
+    }
+
+    @PostMapping("/inquiry/pw")
+    public ResponseEntity<ResponseDto<InquiryPwResponseDto>> inquiryPw(@RequestBody InquiryPwRequestDto inquiryPwInfo) {
+        return ResponseDto.ok(authServiceNormal.inquiryPw(inquiryPwInfo));
     }
 }

@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class InquiryPwResponseDto {
+public class InquiryPwRequestDto {
     private String email;
     private String name;
-    private String phoneNumer;
+    private String phoneNumber;
 }

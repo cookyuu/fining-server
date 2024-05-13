@@ -24,7 +24,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        logger.info("[TOKEN VALIDATION PROCESS] AccessToken Check!");
+        logger.debug("[TOKEN VALIDATION PROCESS] AccessToken Check!");
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

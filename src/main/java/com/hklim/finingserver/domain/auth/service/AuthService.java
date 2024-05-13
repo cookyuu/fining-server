@@ -7,5 +7,5 @@ import com.hklim.finingserver.domain.auth.dto.SignupRequestDto;
 public interface AuthService {
     Long signup(SignupRequestDto signupInfo);
 
-    LoginResponseDto loginNormal(LoginRequestDto loginInfo);
+    LoginResponseDto login(LoginRequestDto loginInfo);
 }

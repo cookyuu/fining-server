@@ -16,12 +16,11 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtUtil {
-
     private final Key key;
     private final long accessTokenExpTime;
 
-    public JwtUtil (@Value("${jwt.secret_key}") String secretKey,
-                    @Value("${jwt.access_expiration_time}") String accessTokenExpTime) {
+    public JwtUtil (@Value("${auth.jwt.secret_key}") String secretKey,
+                    @Value("${auth.jwt.access_expiration_time}") String accessTokenExpTime) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = Long.parseLong(accessTokenExpTime);
