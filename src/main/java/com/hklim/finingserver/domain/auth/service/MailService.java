@@ -4,6 +4,7 @@ import com.hklim.finingserver.domain.auth.dto.EmailAuthCodeRequestDto;
 import com.hklim.finingserver.domain.auth.dto.EmailAuthenticationRequestDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import com.hklim.finingserver.global.utils.AuthUtil;
 import com.hklim.finingserver.global.utils.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -22,11 +23,11 @@ import java.util.Random;
 public class MailService {
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
+    private final AuthUtil authUtil;
     @Transactional
     public void sendEmail(EmailAuthCodeRequestDto request) {
         log.info("[SEND EMAIL AUTH-CODE PROCESS] START");
-        Random random = new Random();
-        String authKey = String.valueOf(random.nextInt(888888) + 111111);
+        String authKey = authUtil.createAuthCode();
         saveAuthCode(request.getEmail(), authKey);
         sendAuthEmail(request.getEmail(), authKey);
         log.info("[SEND EMAIL AUTH-CODE PROCESS] END");
