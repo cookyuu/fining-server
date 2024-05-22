@@ -1,6 +1,6 @@
 package com.hklim.finingserver.global.security.jwt;
 
-import com.hklim.finingserver.global.utils.JwtUtil;
+import com.hklim.finingserver.global.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
     /*
     * JWT 토큰 검증 필터
@@ -26,11 +26,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         logger.debug("[TOKEN VALIDATION PROCESS] AccessToken Check!");
         String authorizationHeader = request.getHeader("Authorization");
+        logger.info("Authorization Code : " + authorizationHeader);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
-            if (jwtUtil.validateToken(token)) {
-                Long userId = jwtUtil.getUserId(token);
+            if (jwtUtils.validateToken(token)) {
+                Long userId = jwtUtils.getUserId(token);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
                 if (userDetails != null) {
                     // UserDetails, Password, Role - 접근 권한 인증 Token 생성

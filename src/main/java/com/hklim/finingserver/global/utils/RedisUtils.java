@@ -11,7 +11,7 @@ import java.time.Duration;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisUtil {
+public class RedisUtils {
 
     private final StringRedisTemplate redisTemplate;
 

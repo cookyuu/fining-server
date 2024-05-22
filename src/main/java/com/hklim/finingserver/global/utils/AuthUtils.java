@@ -7,7 +7,7 @@ import java.util.Random;
 
 @Slf4j
 @Component
-public class AuthUtil {
+public class AuthUtils {
     public String createAuthCode() {
         Random random = new Random();
         return String.valueOf(random.nextInt(888888) + 111111);

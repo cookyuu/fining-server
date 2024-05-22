@@ -5,7 +5,7 @@ import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
-import com.hklim.finingserver.global.utils.JwtUtil;
+import com.hklim.finingserver.global.utils.JwtUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class AuthServiceNormal implements AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
     @Override
     @Transactional
@@ -79,7 +79,7 @@ public class AuthServiceNormal implements AuthService {
         JwtUserInfo userInfo = new JwtUserInfo();
         userInfo.toDto(member);
 
-        String accessToken = jwtUtil.createAccessToken(userInfo);
+        String accessToken = jwtUtils.createAccessToken(userInfo);
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .build();

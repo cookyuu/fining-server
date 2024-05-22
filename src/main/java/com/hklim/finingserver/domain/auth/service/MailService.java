@@ -4,8 +4,8 @@ import com.hklim.finingserver.domain.auth.dto.EmailAuthCodeRequestDto;
 import com.hklim.finingserver.domain.auth.dto.EmailAuthenticationRequestDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
-import com.hklim.finingserver.global.utils.AuthUtil;
-import com.hklim.finingserver.global.utils.RedisUtil;
+import com.hklim.finingserver.global.utils.AuthUtils;
+import com.hklim.finingserver.global.utils.RedisUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
@@ -15,19 +15,17 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService {
     private final JavaMailSender javaMailSender;
-    private final RedisUtil redisUtil;
-    private final AuthUtil authUtil;
+    private final RedisUtils redisUtils;
+    private final AuthUtils authUtils;
     @Transactional
     public void sendEmail(EmailAuthCodeRequestDto request) {
         log.info("[SEND EMAIL AUTH-CODE PROCESS] START");
-        String authKey = authUtil.createAuthCode();
+        String authKey = authUtils.createAuthCode();
         saveAuthCode(request.getEmail(), authKey);
         sendAuthEmail(request.getEmail(), authKey);
         log.info("[SEND EMAIL AUTH-CODE PROCESS] END");
@@ -40,7 +38,7 @@ public class MailService {
         String authCode = request.getAuthCode();
 
         log.info("[AUTHENTICATE EMAIL PROCESS] Email authenticate START {email : {}", email + "}");
-        String saveAuthCode = redisUtil.getData(email);
+        String saveAuthCode = redisUtils.getData(email);
 
         if (saveAuthCode == null) {
             throw new ApplicationErrorException(ApplicationErrorType.EMPTY_RESULT_DATA_ERROR, "[Email Authentication Process] Authentication Code is timeout");
@@ -48,7 +46,7 @@ public class MailService {
         if (!saveAuthCode.equals(authCode)) {
             throw new ApplicationErrorException(ApplicationErrorType.DATA_MATCHING_FAIL, "[Email Authentication Process] Authentication Code is not matched");
         }
-        redisUtil.deleteData(email);
+        redisUtils.deleteData(email);
         log.info("[AUTHENTICATE EMAIL PROCESS] Email authenticate END, SUCCESS! {email : {}", email + "}");
     }
 
@@ -72,7 +70,7 @@ public class MailService {
     private void saveAuthCode(String email, String authKey) {
         log.info("[SEND EMAIL AUTH-CODE PROCESS] Save AuthCode START");
         try {
-            redisUtil.setDataExpire(email, authKey, 60*3L);
+            redisUtils.setDataExpire(email, authKey, 60*3L);
         } catch (Exception e) {
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, e);
         }
