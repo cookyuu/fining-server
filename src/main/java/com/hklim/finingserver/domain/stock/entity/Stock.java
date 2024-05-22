@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,13 +18,14 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Stock extends BaseEntity {
-    @NotNull
     private String symbol;
-    @NotNull
     private String name;
-
     private String sector;
+    private String country;
+    private String industry;
+    private String ipoYear;
 
     @OneToMany(mappedBy = "stock")
     private final List<StockIndex> stockIndices = new ArrayList<>();

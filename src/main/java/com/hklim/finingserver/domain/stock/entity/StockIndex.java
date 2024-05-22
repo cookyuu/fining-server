@@ -6,6 +6,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,15 +14,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class StockIndex extends BaseEntity {
-    @NotNull
-    private String lastSale;
-    @NotNull
-    private String changePercent;
-    @NotNull
-    private String marketCap;
 
-    @ManyToOne()
+    private String lastSale;
+    private String marketCap;
+    private String netChange;
+    private String percentChange;
+    private String volume;
+
+    @ManyToOne
     @JoinColumn(name = "stock_id")
     private Stock stock;
 }

@@ -4,7 +4,7 @@ import com.hklim.finingserver.global.security.jwt.CustomAccessDeniedHandler;
 import com.hklim.finingserver.global.security.jwt.CustomAuthenticationEntryPoint;
 import com.hklim.finingserver.global.security.jwt.CustomUserDetailsService;
 import com.hklim.finingserver.global.security.jwt.JwtAuthFilter;
-import com.hklim.finingserver.global.utils.JwtUtil;
+import com.hklim.finingserver.global.utils.JwtUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,12 +24,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/vi/member/**", "/api/v1/auth/**"
+            "/api/vi/member/**", "/api/v1/auth/**", "/api/v1/stock/**"
     };
 
     @Bean
@@ -44,7 +44,7 @@ public class SecurityConfig {
         http.formLogin((form) -> form.disable());
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        http.addFilterBefore(new JwtAuthFilter(customUserDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(customUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling((exceptionHandler) -> exceptionHandler
                 .authenticationEntryPoint(authenticationEntryPoint)
@@ -52,7 +52,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().permitAll());
+                .anyRequest().authenticated());
 
         return http.build();
     }
