@@ -44,11 +44,9 @@ dependencies {
 
 	// model mapper
 	implementation 'org.modelmapper:modelmapper:3.1.1'
-//
-//	// Map Struct
-//	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-//	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-//	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+	// OpenCSV, CSV File Parsing lib
+	implementation 'com.opencsv:opencsv:5.7.1'
 
 	// JUnit5
 	testImplementation("org.junit.platform:junit-platform-launcher:1.5.2")
@@ -57,4 +55,5 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	jvmArgs '-Xshare:off'
 }
