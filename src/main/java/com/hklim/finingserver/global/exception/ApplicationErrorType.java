@@ -22,6 +22,7 @@ public enum ApplicationErrorType {
     ,FAIL_TO_FIND_MEMBER(HttpStatus.BAD_REQUEST, "Fail to find Member. ")
     ,FAIL_TO_FIND_DATA(HttpStatus.BAD_REQUEST, "Fail to find Data. ");
 
+
     private HttpStatus httpStatus;
     private String message;
 

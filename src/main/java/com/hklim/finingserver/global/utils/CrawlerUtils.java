@@ -1,11 +1,10 @@
 package com.hklim.finingserver.global.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hklim.finingserver.domain.stock.dto.SingleStockDataResponseDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
-import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto_bak;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -16,14 +15,15 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class CrowlerUtils {
+@RequiredArgsConstructor
+public class CrawlerUtils {
     @Value("${service.stock.single-url-head}")
     private String singleStockUrlHead;
 
     @Value("${service.stock.single-url-tail}")
     private String singleStockUrlTail;
 
-    @Value("${service.stock.total-url")
+    @Value("${service.stock.total-url}")
     private String totalStockUrl;
 
     public SingleStockDataResponseDto getSingleStockInfo(String symbol) {
@@ -37,14 +37,14 @@ public class CrowlerUtils {
                     .execute();
 
         } catch (IOException e) {
-            log.info("[CROWLING STOCK DATA]");
+            log.info("[STOCK-CRAWLING] Fail to Crawling Stock Data. Symbol : {}, error msg : {}", symbol, e.getStackTrace());
             return null;
         }
         return toSingleStockDataDto(docs.body());
     }
 
-    public StockDataResponseDto_bak getTotalStockInfo() {
-        String url = totalStockUrl;
+    public StockDataResponseDto getTotalStockInfo(int offset) {
+        String url = totalStockUrl + offset*1000;
         Connection.Response docs = null;
         try {
             docs = Jsoup.connect(url)
@@ -61,20 +61,24 @@ public class CrowlerUtils {
         ObjectMapper mapper = new ObjectMapper();
         SingleStockDataResponseDto data = new SingleStockDataResponseDto();
         try {
+            log.info("[STOCK-CRAWLING] Convert Data to Dto. ");
             data = mapper.readValue(stockData, SingleStockDataResponseDto.class);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.info("[STOCK-CRAWLING] Fail to Crawling from URL. error msg : {} ", e.getMessage());
+            return null;
         }
         return data;
     }
-    private StockDataResponseDto_bak toTotalStockDataDto(String stockData) {
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        StockDataResponseDto_bak data = new StockDataResponseDto_bak();
+    private StockDataResponseDto toTotalStockDataDto(String stockData) {
+//        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper mapper = new ObjectMapper();
+        StockDataResponseDto data = new StockDataResponseDto();
         try {
-            data = mapper.readValue(stockData, StockDataResponseDto_bak.class);
-
+            log.info("[STOCK-CRAWLING] Convert Data to Dto. ");
+            data = mapper.readValue(stockData, StockDataResponseDto.class);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.info("[STOCK-CRAWLING] Fail to Crawling from URL. error msg : {} ", e.getMessage());
+            return null;
         }
         return data;
     }

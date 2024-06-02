@@ -3,6 +3,7 @@ package com.hklim.finingserver.domain.stock.controller;
 import com.hklim.finingserver.domain.stock.dto.InsertStockDataRequestDto;
 import com.hklim.finingserver.domain.stock.service.StockService;
 import com.hklim.finingserver.global.dto.ResponseDto;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,5 +24,11 @@ public class StockController {
     public ResponseEntity<ResponseDto<String>> insertStockDataFromCSV(@RequestBody InsertStockDataRequestDto insertStockDataInfo) {
         stockService.insertStockDataFromCSV(insertStockDataInfo);
         return ResponseDto.ok("성공");
+    }
+
+    @GetMapping("/index/scrap")
+    public ResponseEntity<ResponseDto<String>> scrapStockIndex() {
+        stockService.insertTotalData();
+            return ResponseDto.ok("주식 데이터 크롤링 성공");
     }
 }
