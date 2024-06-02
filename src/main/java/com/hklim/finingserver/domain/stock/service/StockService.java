@@ -87,7 +87,9 @@ public class StockService {
         List<StockIndex> stockIndexList = new ArrayList<>();
         stockDataList.forEach(
                 stockData -> {
-                    Stock stock = stockRepository.findBySymbol(stockData.getSymbol());
+                    Stock stock = stockRepository.findBySymbol(stockData.getSymbol()).orElseThrow(() ->
+                            new ApplicationErrorException(ApplicationErrorType.NO_EXIST_MEMBER)
+                        );
                     if (stock != null) {
                         stockIndexList.add(new StockIndex(stockData.getLastsale(), stockData.getMarketCap(), stockData.getNetchange(), stockData.getPctchange(), lastPriceDate, stock));
                     }

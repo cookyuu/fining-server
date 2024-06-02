@@ -49,7 +49,7 @@ public class JwtUtils {
 
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidity = now.plusSeconds(expiredTime);
-
+        log.info("[Test]");
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(Date.from(now.toInstant()))

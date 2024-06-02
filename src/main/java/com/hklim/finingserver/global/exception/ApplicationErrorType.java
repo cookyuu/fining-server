@@ -18,7 +18,8 @@ public enum ApplicationErrorType {
     ,FAIL_TO_SAVE_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to save Data")
     ,DATA_MATCHING_FAIL(HttpStatus.BAD_REQUEST, "Fail to match Data. ")
 
-    ,NO_MEMBER_EXIST(HttpStatus.BAD_REQUEST, "Not Exists Member. ")
+    ,NO_EXIST_MEMBER(HttpStatus.BAD_REQUEST, "Not Exists Member. ")
+    ,NO_EXIST_STOCK(HttpStatus.BAD_REQUEST, "Not Exists Stock. ")
     ,FAIL_TO_FIND_MEMBER(HttpStatus.BAD_REQUEST, "Fail to find Member. ")
     ,FAIL_TO_FIND_DATA(HttpStatus.BAD_REQUEST, "Fail to find Data. ");
 

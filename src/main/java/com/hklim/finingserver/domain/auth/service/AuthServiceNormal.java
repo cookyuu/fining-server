@@ -69,9 +69,7 @@ public class AuthServiceNormal implements AuthService {
         String password = loginInfo.getPassword();
         Member member = memberRepository.findByEmail(email).orElseThrow(()->
                 new ApplicationErrorException(ApplicationErrorType.FAIL_TO_FIND_MEMBER));
-        if (member == null) {
-            throw new UsernameNotFoundException("Email is not exist");
-        }
+        log.info("[NORMAL-LOGIN] Find Member email : {}", member.getEmail());
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new BadCredentialsException("Password is not matched");
@@ -80,6 +78,7 @@ public class AuthServiceNormal implements AuthService {
         userInfo.toDto(member);
 
         String accessToken = jwtUtils.createAccessToken(userInfo);
+        log.info("[TEST3]");
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .build();
@@ -102,7 +101,7 @@ public class AuthServiceNormal implements AuthService {
         Member member = memberRepository.findByNameAndPhoneNumber(name, phoneNumber).orElseThrow(
                 () -> new ApplicationErrorException(ApplicationErrorType.INTERNAL_ERROR));
         if (member == null) {
-            throw new ApplicationErrorException(ApplicationErrorType.NO_MEMBER_EXIST);
+            throw new ApplicationErrorException(ApplicationErrorType.NO_EXIST_MEMBER);
         } else {
             InquiryEmailResponseDto res = new InquiryEmailResponseDto();
             res.toDto(member);
@@ -118,7 +117,7 @@ public class AuthServiceNormal implements AuthService {
         Member member = memberRepository.findByEmailAndNameAndPhoneNumber(email, name, phoneNumber).orElseThrow(
                 () -> new ApplicationErrorException(ApplicationErrorType.FAIL_TO_FIND_MEMBER));
         if (member == null) {
-            throw new ApplicationErrorException(ApplicationErrorType.NO_MEMBER_EXIST);
+            throw new ApplicationErrorException(ApplicationErrorType.NO_EXIST_MEMBER);
         }
         String tempPw = createTemporaryPw(tempPwLength);
         String encTempPw = passwordEncoder.encode(tempPw);
