@@ -52,7 +52,6 @@ public class StockDataFromCSVDto {
                 .marketCap(this.marketCap)
                 .netChange(this.netChange)
                 .percentChange(this.change)
-                .volume(this.volume)
                 .stock(stock)
                 .build();
     }

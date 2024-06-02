@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -21,7 +23,7 @@ public class StockIndex extends BaseEntity {
     private String marketCap;
     private String netChange;
     private String percentChange;
-    private String volume;
+    private LocalDate lastSaleDate;
 
     @ManyToOne
     @JoinColumn(name = "stock_id")
