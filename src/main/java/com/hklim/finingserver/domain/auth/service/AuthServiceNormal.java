@@ -68,7 +68,7 @@ public class AuthServiceNormal implements AuthService {
         String email = loginInfo.getEmail();
         String password = loginInfo.getPassword();
         Member member = memberRepository.findByEmail(email).orElseThrow(()->
-                new ApplicationErrorException(ApplicationErrorType.FAIL_TO_FIND_MEMBER));
+                new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
         log.info("[NORMAL-LOGIN] Find Member email : {}", member.getEmail());
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
@@ -78,7 +78,6 @@ public class AuthServiceNormal implements AuthService {
         userInfo.toDto(member);
 
         String accessToken = jwtUtils.createAccessToken(userInfo);
-        log.info("[TEST3]");
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .build();
@@ -101,7 +100,7 @@ public class AuthServiceNormal implements AuthService {
         Member member = memberRepository.findByNameAndPhoneNumber(name, phoneNumber).orElseThrow(
                 () -> new ApplicationErrorException(ApplicationErrorType.INTERNAL_ERROR));
         if (member == null) {
-            throw new ApplicationErrorException(ApplicationErrorType.NO_EXIST_MEMBER);
+            throw new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER);
         } else {
             InquiryEmailResponseDto res = new InquiryEmailResponseDto();
             res.toDto(member);
@@ -115,10 +114,8 @@ public class AuthServiceNormal implements AuthService {
         String phoneNumber = inquiryPwInfo.getPhoneNumber();
         log.info("{}, {}, {}", email, name, phoneNumber);
         Member member = memberRepository.findByEmailAndNameAndPhoneNumber(email, name, phoneNumber).orElseThrow(
-                () -> new ApplicationErrorException(ApplicationErrorType.FAIL_TO_FIND_MEMBER));
-        if (member == null) {
-            throw new ApplicationErrorException(ApplicationErrorType.NO_EXIST_MEMBER);
-        }
+                () -> new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
+
         String tempPw = createTemporaryPw(tempPwLength);
         String encTempPw = passwordEncoder.encode(tempPw);
         member.updateTempPw(encTempPw);

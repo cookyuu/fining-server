@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ApplicationErrorType {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "System error occurred. ")
-    ,EMPTY_RESULT_DATA_ERROR(HttpStatus.BAD_REQUEST, "Fail to find Result Data, Try again. ")
+    ,EMPTY_RESULT_DATA_ERROR(HttpStatus.NOT_FOUND, "Fail to find Result Data, Try again. ")
     ,INVALID_DATA_ARGUMENT(HttpStatus.BAD_REQUEST, "Invalid Data Argument. ")
 
     ,DATA_DUPLICATED_ERROR(HttpStatus.BAD_REQUEST, "Data is Duplicated")
@@ -16,12 +16,14 @@ public enum ApplicationErrorType {
 
     ,AUTHCODE_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to send Auth Code")
     ,FAIL_TO_SAVE_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to save Data")
-    ,DATA_MATCHING_FAIL(HttpStatus.BAD_REQUEST, "Fail to match Data. ")
+    ,DATA_MATCHING_FAIL(HttpStatus.NOT_FOUND, "Fail to match Data. ")
 
-    ,NO_EXIST_MEMBER(HttpStatus.BAD_REQUEST, "Not Exists Member. ")
-    ,NO_EXIST_STOCK(HttpStatus.BAD_REQUEST, "Not Exists Stock. ")
-    ,FAIL_TO_FIND_MEMBER(HttpStatus.BAD_REQUEST, "Fail to find Member. ")
-    ,FAIL_TO_FIND_DATA(HttpStatus.BAD_REQUEST, "Fail to find Data. ");
+    ,NOT_FOUND_STOCK(HttpStatus.NOT_FOUND, "Fail to find Stock. Stock is not exists. ")
+    ,NOT_FOUND_PORTFOLIO(HttpStatus.NOT_FOUND, "Fail to find Portfolio. Stock is not exists in Portfolio. ")
+    ,NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "Fail to find Member. Member is not exists. ")
+    ,NOT_FOUND_DATA(HttpStatus.NOT_FOUND, "Fail to find Data. ")
+
+    ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ");
 
 
     private HttpStatus httpStatus;

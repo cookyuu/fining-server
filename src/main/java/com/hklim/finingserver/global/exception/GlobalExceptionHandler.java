@@ -12,14 +12,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import java.time.format.DateTimeParseException;
+
 @Primary
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = ApplicationErrorException.class)
     public ResponseEntity<ErrorResponseDto> handleApplicationErrorException(WebRequest request, ApplicationErrorException e) {
-        log.error("[ApplicationErrorException] {}", e.getMessage());
-        var response = new ErrorResponseDto(e.getErrorType().name(), e.getMessage());
+        String errMsg = "";
+        if (e.getMessage() == null) {
+            errMsg = e.getErrorType().getMessage();
+            log.error("[ApplicationErrorException] {}", errMsg);
+        } else {
+            errMsg = e.getMessage() + " " + e.getErrorType().getMessage();
+            log.error("[ApplicationErrorException] {}", errMsg);
+        }
+        var response = new ErrorResponseDto(e.getErrorType().name(), errMsg);
         return new ResponseEntity<>(response, e.getErrorType().getHttpStatus());
     }
 
@@ -48,6 +57,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleConstraintViolationException(WebRequest request, ConstraintViolationException e) {
         log.error("[ConstraintViolationException] {}", e.getMessage());
         var response = new ErrorResponseDto(ApplicationErrorType.INVALID_DATA_ARGUMENT.name(), e.getMessage());
+        return new ResponseEntity<>(response, ApplicationErrorType.INVALID_DATA_ARGUMENT.getHttpStatus());
+    }
+
+
+    @ExceptionHandler(value = DateTimeParseException.class)
+    public ResponseEntity<Object> handleConstraintDateTimeParseException(WebRequest request, DateTimeParseException e) {
+        log.error("[DateTimeParseException] {}", e.getMessage());
+        var response = new ErrorResponseDto(ApplicationErrorType.FAIL_DATATIME_PARSE.name(), e.getMessage());
         return new ResponseEntity<>(response, ApplicationErrorType.INVALID_DATA_ARGUMENT.getHttpStatus());
     }
 
