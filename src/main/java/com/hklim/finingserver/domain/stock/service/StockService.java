@@ -87,9 +87,7 @@ public class StockService {
         List<StockIndex> stockIndexList = new ArrayList<>();
         stockDataList.forEach(
                 stockData -> {
-                    Stock stock = stockRepository.findBySymbol(stockData.getSymbol()).orElseThrow(() ->
-                            new ApplicationErrorException(ApplicationErrorType.NO_EXIST_MEMBER)
-                        );
+                    Stock stock = stockRepository.findBySymbol(stockData.getSymbol());
                     if (stock != null) {
                         stockIndexList.add(new StockIndex(stockData.getLastsale(), stockData.getMarketCap(), stockData.getNetchange(), stockData.getPctchange(), lastPriceDate, stock));
                     }
@@ -100,7 +98,7 @@ public class StockService {
     private LocalDate convertAsofToLocalDate(String asof) {
         log.info("[STOCK_CRAWLING] Convert LastPrice Type, String to LocalDate.");
         String asOfDate = asof.replace("Last price as of ","").trim();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
 
         try {
             return LocalDate.parse(asOfDate, formatter);

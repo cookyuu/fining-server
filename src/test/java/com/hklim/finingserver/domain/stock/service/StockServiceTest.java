@@ -50,10 +50,11 @@ class StockServiceTest {
 
     @Test
     public void convertAsofToLocalDateTest() {
-        String asOf = "Last price as of May 31, 2024";
+//        String asOf = "Last price as of May 31, 2024";
+        String asOf = "Last price as of Jun 3, 2024";
         String asOfDate = asOf.replace("Last price as of ","").trim();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.ENGLISH);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
 
         try {
             // Parse the date string to LocalDate
