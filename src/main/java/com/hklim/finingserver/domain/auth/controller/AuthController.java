@@ -4,6 +4,7 @@ import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.auth.service.AuthServiceNormal;
 import com.hklim.finingserver.domain.auth.service.MailService;
 import com.hklim.finingserver.global.dto.ResponseDto;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<LoginResponseDto>> loginNormal(@RequestBody LoginRequestDto loginInfo) {
-        LoginResponseDto res = authServiceNormal.login(loginInfo);
+    public ResponseEntity<ResponseDto<LoginResponseDto>> loginNormal(@RequestBody LoginRequestDto loginInfo, HttpServletResponse response) {
+        LoginResponseDto res = authServiceNormal.login(loginInfo, response);
         return ResponseDto.ok(res);
     }
 

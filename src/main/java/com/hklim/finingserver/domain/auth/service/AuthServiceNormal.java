@@ -6,6 +6,8 @@ import com.hklim.finingserver.domain.member.repository.MemberRepository;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.JwtUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,8 @@ public class AuthServiceNormal implements AuthService {
     String pwPattern;
     @Value("${auth.pw.temp.length}")
     int tempPwLength;
-
+    @Value("${auth.jwt.refresh_expiration_time}")
+    String refreshTokenExpTime;
     private static final char[] randomAllCharacters = new char[]{
             //number
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -64,7 +67,7 @@ public class AuthServiceNormal implements AuthService {
     }
 
     @Override
-    public LoginResponseDto login(LoginRequestDto loginInfo) {
+    public LoginResponseDto login(LoginRequestDto loginInfo, HttpServletResponse response) {
         String email = loginInfo.getEmail();
         String password = loginInfo.getPassword();
         Member member = memberRepository.findByEmail(email).orElseThrow(()->
@@ -78,6 +81,17 @@ public class AuthServiceNormal implements AuthService {
         userInfo.toDto(member);
 
         String accessToken = jwtUtils.createAccessToken(userInfo);
+        String refreshToken = jwtUtils.createRefreshToken(userInfo);
+
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
+
+        cookie.setMaxAge(Integer.parseInt(refreshTokenExpTime));
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .build();
