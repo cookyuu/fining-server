@@ -25,7 +25,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.error("Not Authenticated Request", authException);
 
-        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.name(), authException.getMessage());
+//        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.name(), authException.getMessage());
+        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.name(), "Authentication Exception. ");
 
         String resBody = objectMapper.writeValueAsString(errorResponse);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

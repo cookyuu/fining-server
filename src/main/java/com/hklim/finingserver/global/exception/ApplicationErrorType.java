@@ -23,7 +23,9 @@ public enum ApplicationErrorType {
     ,NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "Fail to find Member. Member is not exists. ")
     ,NOT_FOUND_DATA(HttpStatus.NOT_FOUND, "Fail to find Data. ")
 
-    ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ");
+    ,FAIL_JWT_VALIDATION(HttpStatus.UNAUTHORIZED, "Fail to validate JWT Token. ")
+    ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ")
+    ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during stock index crawling process. ");
 
 
     private HttpStatus httpStatus;

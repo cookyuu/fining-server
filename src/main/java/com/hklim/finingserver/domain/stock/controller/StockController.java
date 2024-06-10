@@ -20,13 +20,13 @@ public class StockController {
     private final StockService stockService;
 
     // 파일로 주식정보를 입력하는 api
-    @PostMapping("/renew")
+    @PostMapping("/scrap/info")
     public ResponseEntity<ResponseDto<String>> insertStockDataFromCSV(@RequestBody InsertStockDataRequestDto insertStockDataInfo) {
         stockService.insertStockDataFromCSV(insertStockDataInfo);
         return ResponseDto.ok("성공");
     }
 
-    @GetMapping("/index/scrap")
+    @PostMapping("/scrap/index")
     public ResponseEntity<ResponseDto<String>> scrapStockIndex() {
         stockService.insertTotalData();
             return ResponseDto.ok("주식 데이터 크롤링 성공");

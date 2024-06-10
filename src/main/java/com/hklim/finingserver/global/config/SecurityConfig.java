@@ -31,6 +31,9 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/vi/member/**", "/api/v1/auth/**", "/api/v1/stock/**"
     };
+    private static final String[] AUTH_ADMIN = {
+            "/api/v1/stock/scrap/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,6 +54,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler));
 
         http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(AUTH_ADMIN).hasRole("ADMIN")
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated());
 

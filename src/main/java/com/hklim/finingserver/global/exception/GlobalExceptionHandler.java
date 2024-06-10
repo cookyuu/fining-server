@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
             errMsg = e.getErrorType().getMessage();
             log.error("[ApplicationErrorException] {}", errMsg);
         } else {
-            errMsg = e.getMessage() + " " + e.getErrorType().getMessage();
+            errMsg = e.getMessage();
             log.error("[ApplicationErrorException] {}", errMsg);
         }
         var response = new ErrorResponseDto(e.getErrorType().name(), errMsg);
