@@ -2,6 +2,7 @@ package com.hklim.finingserver.domain.auth.service;
 
 import com.hklim.finingserver.domain.auth.dto.EmailAuthCodeRequestDto;
 import com.hklim.finingserver.domain.auth.dto.EmailAuthenticationRequestDto;
+import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.AuthUtils;
@@ -38,7 +39,7 @@ public class MailService {
         String authCode = request.getAuthCode();
 
         log.info("[AUTHENTICATE EMAIL PROCESS] Email authenticate START {email : {}", email + "}");
-        String saveAuthCode = redisUtils.getData(email);
+        String saveAuthCode = redisUtils.getData(RedisKeyType.AUTH_EMAIL.getSeparator() + email);
 
         if (saveAuthCode == null) {
             throw new ApplicationErrorException(ApplicationErrorType.EMPTY_RESULT_DATA_ERROR, "[Email Authentication Process] Authentication Code is timeout");
@@ -70,7 +71,7 @@ public class MailService {
     private void saveAuthCode(String email, String authKey) {
         log.info("[SEND EMAIL AUTH-CODE PROCESS] Save AuthCode START");
         try {
-            redisUtils.setDataExpire(email, authKey, 60*3L);
+            redisUtils.setDataExpire(RedisKeyType.AUTH_EMAIL.getSeparator() + email, authKey, 60*3L);
         } catch (Exception e) {
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, e);
         }
