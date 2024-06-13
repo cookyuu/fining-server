@@ -4,6 +4,7 @@ import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.auth.service.AuthServiceNormal;
 import com.hklim.finingserver.domain.auth.service.MailService;
 import com.hklim.finingserver.global.dto.ResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,12 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseDto<Long>> signupNormal(@RequestBody SignupRequestDto signupInfo) {
         return ResponseDto.created(authServiceNormal.signup(signupInfo));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ResponseDto<String>> logoutNormal(HttpServletRequest request, HttpServletResponse response) {
+        authServiceNormal.logout(request.getHeader("Authorization"), response);
+        return ResponseDto.ok("로그아웃이 정상처리 되었습니다.");
     }
 
     @PostMapping("/email/auth-code")

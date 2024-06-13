@@ -14,7 +14,7 @@ public enum ApplicationErrorType {
     ,DATA_DUPLICATED_ERROR(HttpStatus.BAD_REQUEST, "Data is Duplicated")
     ,DATA_ENCRPYT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to Encrypt Data. " )
 
-    ,   AUTHCODE_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to send Auth Code")
+    ,AUTHCODE_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to send Auth Code")
     ,FAIL_TO_SAVE_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to save Data")
     ,DATA_MATCHING_FAIL(HttpStatus.NOT_FOUND, "Fail to match Data. ")
 
@@ -23,6 +23,8 @@ public enum ApplicationErrorType {
     ,NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "Fail to find Member. Member is not exists. ")
     ,NOT_FOUND_DATA(HttpStatus.NOT_FOUND, "Fail to find Data. ")
 
+    ,FAIL_JWT_VALIDATION_LOGOUT(HttpStatus.BAD_REQUEST, "Already logged out jwt. ")
+    ,FAIL_JWT_LOGOUT(HttpStatus.INTERNAL_SERVER_ERROR, "JWT token logout Failure. ")
     ,FAIL_JWT_VALIDATION(HttpStatus.UNAUTHORIZED, "Fail to validate JWT Token. ")
     ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ")
     ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during stock index crawling process. ");

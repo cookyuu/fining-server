@@ -3,9 +3,12 @@ package com.hklim.finingserver.domain.auth.service;
 import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
+import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.JwtUtils;
+import com.hklim.finingserver.global.utils.RedisUtils;
+import io.lettuce.core.RedisException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -32,6 +35,9 @@ public class AuthServiceNormal implements AuthService {
     int tempPwLength;
     @Value("${auth.jwt.refresh_expiration_time}")
     String refreshTokenExpTime;
+    @Value("${spring.data.redis.expiration_time.logout}")
+    String logoutExpTime;
+
     private static final char[] randomAllCharacters = new char[]{
             //number
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -48,6 +54,7 @@ public class AuthServiceNormal implements AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final RedisUtils redisUtils;
 
     @Override
     @Transactional
@@ -67,6 +74,7 @@ public class AuthServiceNormal implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginResponseDto login(LoginRequestDto loginInfo, HttpServletResponse response) {
         String email = loginInfo.getEmail();
         String password = loginInfo.getPassword();
@@ -95,6 +103,22 @@ public class AuthServiceNormal implements AuthService {
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    @Override
+    public void logout(String authorizationHeader, HttpServletResponse response) {
+        String accessToken = authorizationHeader.substring(7);
+        log.info("[LOGOUT PROCESS] Set accessToken to logout token list, START");
+        try {
+            redisUtils.setDataExpire(RedisKeyType.LOGOUT_TOKEN.getSeparator()+accessToken, String.valueOf(true), Long.parseLong(logoutExpTime));
+        } catch (RedisException e) {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_LOGOUT, "로그아웃 처리를 실패했습니다. 다시 요청해주세요.");
+        } finally {
+            Cookie cookie = new Cookie("refresh_token", null);
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
+        log.info("[LOGOUT PROCESS] Set accessToken to logout token list, END");
     }
 
     private void chkSignupValidation(String email) {

@@ -1,6 +1,7 @@
 package com.hklim.finingserver.global.utils;
 
 import com.hklim.finingserver.domain.auth.dto.JwtUserInfo;
+import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import io.jsonwebtoken.*;
@@ -21,14 +22,18 @@ public class JwtUtils {
     private final Key key;
     private final long accessTokenExpTime;
     private final long refreshTokenExpTime;
+    private final RedisUtils redisUtils;
 
     public JwtUtils(@Value("${auth.jwt.secret_key}") String secretKey,
                     @Value("${auth.jwt.access_expiration_time}") String accessTokenExpTime,
-                    @Value("${auth.jwt.refresh_expiration_time}") String refreshTokenExpTime) {
+                    @Value("${auth.jwt.refresh_expiration_time}") String refreshTokenExpTime,
+                    RedisUtils redisUtils
+    ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = Long.parseLong(accessTokenExpTime);
         this.refreshTokenExpTime = Long.parseLong(refreshTokenExpTime);
+        this.redisUtils = redisUtils;
     }
 
     public String createAccessToken(JwtUserInfo member) {
@@ -79,8 +84,23 @@ public class JwtUtils {
         }
     }
 
-    public  boolean validateToken(String token) {
+    private boolean isLogoutToken(String token) {
+        log.info("[VALIDATE TOKEN] Logout token check, START");
         try {
+            if (redisUtils.getData(RedisKeyType.LOGOUT_TOKEN.getSeparator() + token) == null) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            throw new ApplicationErrorException(ApplicationErrorType.INTERNAL_ERROR, "토큰 로그아웃 여부 확인 중 오류 발생, 잠시 후 다시 시도해주세요.");
+        }
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            if (isLogoutToken(token)) {
+                throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_VALIDATION_LOGOUT, "이미 로그아웃 된 사용자입니다. 다시 로그인해주세요.");
+            }
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {

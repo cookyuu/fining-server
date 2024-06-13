@@ -9,4 +9,6 @@ public interface AuthService {
     Long signup(SignupRequestDto signupInfo);
 
     LoginResponseDto login(LoginRequestDto loginInfo, HttpServletResponse response);
+
+    void logout(String accessToken, HttpServletResponse repsonse);
 }
