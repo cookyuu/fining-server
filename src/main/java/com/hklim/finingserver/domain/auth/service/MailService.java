@@ -12,6 +12,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class MailService {
     private final JavaMailSender javaMailSender;
     private final RedisUtils redisUtils;
     private final AuthUtils authUtils;
+    @Value("${spring.data.redis.expiration_time.auth_code}")
+    String authCodeExpTime;
+
     @Transactional
     public void sendEmail(EmailAuthCodeRequestDto request) {
         log.info("[SEND EMAIL AUTH-CODE PROCESS] START");
@@ -71,7 +75,7 @@ public class MailService {
     private void saveAuthCode(String email, String authKey) {
         log.info("[SEND EMAIL AUTH-CODE PROCESS] Save AuthCode START");
         try {
-            redisUtils.setDataExpire(RedisKeyType.AUTH_EMAIL.getSeparator() + email, authKey, 60*3L);
+            redisUtils.setDataExpire(RedisKeyType.AUTH_EMAIL.getSeparator() + email, authKey, Long.parseLong(authCodeExpTime));
         } catch (Exception e) {
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, e);
         }
