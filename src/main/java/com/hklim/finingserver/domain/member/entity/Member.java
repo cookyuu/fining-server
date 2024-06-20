@@ -2,7 +2,6 @@ package com.hklim.finingserver.domain.member.entity;
 
 import com.hklim.finingserver.domain.portfolio.entity.Portfolio;
 import com.hklim.finingserver.global.entity.BaseEntity;
-import com.hklim.finingserver.global.entity.RoleType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

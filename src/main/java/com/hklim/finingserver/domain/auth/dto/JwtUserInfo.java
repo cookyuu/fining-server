@@ -1,7 +1,7 @@
 package com.hklim.finingserver.domain.auth.dto;
 
 import com.hklim.finingserver.domain.member.entity.Member;
-import com.hklim.finingserver.global.entity.RoleType;
+import com.hklim.finingserver.domain.member.entity.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
