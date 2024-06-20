@@ -6,26 +6,29 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BondDataResponseDto {
+public class StockIndicatorDataResponseDto {
+    @JsonProperty("datas")
+    private List<Data> dataList;
 
-    @JsonProperty("data")
-     private Data data;
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Data {
-        @JsonProperty("Chg")
-        private String chg;
-        @JsonProperty("ChgPct")
-        private String chgPct;
-        @JsonProperty("Last")
-        private String last;
-        @JsonProperty("Name")
-        private String name;
-        @JsonProperty("Symbol")
+    public static class Data{
+        @JsonProperty("indexName")
+        private String IndicatorName;
+        @JsonProperty("closePrice")
+        private String price;
+        @JsonProperty("compareToPreviousClosePrice")
+        private String netChange;
+        @JsonProperty("fluctuationsRatio")
+        private String percentChange;
+        @JsonProperty("symbolCode")
         private String symbol;
     }
+
 }

@@ -27,7 +27,7 @@ public enum ApplicationErrorType {
     ,FAIL_JWT_LOGOUT(HttpStatus.INTERNAL_SERVER_ERROR, "JWT token logout Failure. ")
     ,FAIL_JWT_VALIDATION(HttpStatus.UNAUTHORIZED, "Fail to validate JWT Token. ")
     ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ")
-    ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during stock index crawling process. ");
+    ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during crawling process. ");
 
 
     private HttpStatus httpStatus;

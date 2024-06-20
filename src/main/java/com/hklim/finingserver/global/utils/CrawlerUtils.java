@@ -2,6 +2,8 @@ package com.hklim.finingserver.global.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hklim.finingserver.domain.indicators.dto.BondDataResponseDto;
+import com.hklim.finingserver.domain.indicators.dto.StockIndicatorDataResponseDto;
 import com.hklim.finingserver.domain.stock.dto.SingleStockDataResponseDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,12 @@ public class CrawlerUtils {
 
     @Value("${service.stock.total-url}")
     private String totalStockUrl;
+
+    @Value("${service.indicator.stock-url}")
+    private String stockIndicatorUrl;
+
+    @Value("${service.indicator.bond-url}")
+    private String bondIndicatorUrl;
 
     public SingleStockDataResponseDto getSingleStockInfo(String symbol) {
         String url = singleStockUrlHead + symbol + singleStockUrlTail;
@@ -83,4 +91,43 @@ public class CrawlerUtils {
         return data;
     }
 
+    public BondDataResponseDto getBondData() {
+        Connection.Response docs = null;
+        try {
+            docs = Jsoup.connect(bondIndicatorUrl)
+                    .timeout(60*1000)
+                    .ignoreContentType(true)
+                    .execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return toDto(new BondDataResponseDto(), docs.body());
+    }
+
+    public StockIndicatorDataResponseDto getStockIndicatorData() {
+        Connection.Response docs = null;
+        try {
+            docs = Jsoup.connect(stockIndicatorUrl)
+                    .timeout(60*1000)
+                    .ignoreContentType(true)
+                    .execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return toDto(new StockIndicatorDataResponseDto(), docs.body());
+    }
+
+    private <T> T toDto(T dto, String bondData) {
+        ObjectMapper mapper = new ObjectMapper();
+        T data;
+        try {
+            log.info("[INDICATOR-CRAWLING] Convert Data to Dto. ");
+            data = (T) mapper.readValue(bondData, dto.getClass());
+        } catch (JsonProcessingException e) {
+            log.info("[INDICATOR-CRAWLING] Fail to Crawling from URL. error msg : {} ", e.getMessage());
+            return null;
+        }
+        return data;
+    }
 }

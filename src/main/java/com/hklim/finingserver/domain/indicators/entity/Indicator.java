@@ -2,7 +2,6 @@ package com.hklim.finingserver.domain.indicators.entity;
 
 import com.hklim.finingserver.domain.news.entity.IndicatorNews;
 import com.hklim.finingserver.global.entity.BaseEntity;
-import com.hklim.finingserver.global.entity.IndicatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,16 +20,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Indicator extends BaseEntity {
-
     @NotNull
+    private String name;
+    @NotNull
+    private String symbol;
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private IndicatorType indicatorType;
-
-    @NotNull
-    private String indicatorValue;
-
-    @NotNull
-    private String changePercent;
 
     @OneToMany(mappedBy = "indicator")
     private final List<IndicatorNews> indicatorNewsList = new ArrayList<>();
+    @OneToMany(mappedBy = "indicator")
+    private final List<IndicatorIndex> indicatorIndexList = new ArrayList<>();
 }
