@@ -35,9 +35,9 @@ public class BondIndicatorService extends CommonIndicatorService implements Indi
     public void insertData() {
         List<IndicatorIndex> indicatorIndexList = new ArrayList<>();
         toEntityList(indicatorIndexList, crawlerUtils.getBondData().getDataList());
-        if (isExistIndicatorIndexToday()) {
-            log.info("[INDICATOR-CRAWLING] Today Indicator data");
-            return;
+        if (isExistIndicatorIndexToday(IndicatorType.BOND)) {
+            log.info("[INDICATOR-CRAWLING] Today's Bond Indicator data has already been inserted. ");
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, "[INDICATOR-CRAWLING] Today's Bond Indicator data has already been inserted. Please try again tomorrow. ");
         }
         try {
             log.info("[INDICATOR-CRAWLING] Bond Indicator Data Insert. ");
@@ -55,10 +55,10 @@ public class BondIndicatorService extends CommonIndicatorService implements Indi
                     log.info("[INDICATOR-CRAWLING] New Indicator Data Insert.  Symbol : {}", data.getSymbol());
                     Indicator newIndicator = indicatorRepository.save(new Indicator(data.getIndicatorName(), data.getSymbol(), IndicatorType.BOND));
                     indicatorIndexList.add(new IndicatorIndex(data.getNetChange(), data.getPercentChange(), data.getPrice(),
-                            LocalDate.now(), newIndicator));
+                            LocalDate.now(), newIndicator.getIndicatorType(), newIndicator));
                 } else {
                     indicatorIndexList.add(new IndicatorIndex(data.getNetChange(), data.getPercentChange(), data.getPrice(),
-                            LocalDate.now(), indicator));
+                            LocalDate.now(),indicator.getIndicatorType(), indicator));
                 }
             });
         } catch (Exception e) {

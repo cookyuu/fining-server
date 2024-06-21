@@ -1,9 +1,7 @@
 package com.hklim.finingserver.domain.indicators.entity;
 
 import com.hklim.finingserver.global.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +19,8 @@ public class IndicatorIndex extends BaseEntity {
     private String percentChange;
     private String price;
     private LocalDate asOfDate;
+    @Enumerated(EnumType.STRING)
+    private IndicatorType indicatorType;
 
     @ManyToOne
     @JoinColumn(name = "indicator_id")

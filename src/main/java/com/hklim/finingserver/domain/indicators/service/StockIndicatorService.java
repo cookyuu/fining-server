@@ -9,7 +9,6 @@ import com.hklim.finingserver.domain.indicators.repository.IndicatorRepository;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.CrawlerUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +34,13 @@ public class StockIndicatorService extends CommonIndicatorService implements Ind
     public void insertData() {
         List<IndicatorIndex> indicatorIndexList = new ArrayList<>();
         toEntityList(indicatorIndexList, crawlerUtils.getStockIndicatorData().getDataList());
+        if (isExistIndicatorIndexToday(IndicatorType.STOCK)) {
+            log.info("[INDICATOR-CRAWLING] Today's Stock Indicator data has already been inserted");
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, "[INDICATOR-CRAWLING] Today's Stock Indicator data has already been inserted. Please try again tomorrow. ");
+        }
         try {
             log.info("[INDICATOR-CRAWLING] Stock Indicator Data Insert. ");
+
             indicatorIndexRepository.saveAll(indicatorIndexList);
         } catch (Exception e) {
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, e);
@@ -50,10 +54,10 @@ public class StockIndicatorService extends CommonIndicatorService implements Ind
                     log.info("[INDICATOR-CRAWLING] New Indicator Data Insert. Symbol : {}", data.getSymbol());
                     Indicator newIndicator = indicatorRepository.save(new Indicator(data.getIndicatorName(), data.getSymbol(), IndicatorType.STOCK));
                     indicatorIndexList.add(new IndicatorIndex(data.getNetChange(), data.getPercentChange(), data.getPrice(),
-                            LocalDate.now(), newIndicator));
+                            LocalDate.now(), newIndicator.getIndicatorType(), newIndicator));
                 } else {
                     indicatorIndexList.add(new IndicatorIndex(data.getNetChange(), data.getPercentChange(), data.getPrice(),
-                            LocalDate.now(), indicator));
+                            LocalDate.now(), indicator.getIndicatorType(), indicator));
                 }
             });
         } catch (Exception e) {
