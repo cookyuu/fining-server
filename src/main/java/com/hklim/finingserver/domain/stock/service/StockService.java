@@ -42,14 +42,14 @@ public class StockService {
         String fileFullPath = Paths.get(insertStockDataInfo.getFilePath(), insertStockDataInfo.getFileName()).toString();
         List<StockDataFromCSVDto> stockDataList = fileUtils.toDtoFromCSVFile(fileFullPath);
         if (stockDataList.isEmpty()) {
-            log.info("Extract Stock Data Count is Zero. ");
+            log.info("[INSERT-STOCK-DATA] Extract Stock Data Count is Zero. ");
         } else {
-            log.info("[INSERT STOCK DATA PROCESS] START. ");
+            log.info("[INSERT-STOCK-DATA] START. ");
             for (StockDataFromCSVDto stockData : stockDataList) {
                 Stock stock = stockRepository.save(stockData.toStockEntity());
                 stockIndexRepository.save(stockData.toStockIndexEntity(stock));
             }
-            log.info("[INSERT STOCK DATA PROCESS] END. Insert Data Count : {}", stockDataList.size());
+            log.info("[INSERT-STOCK-DATA] END. Insert Data Count : {}", stockDataList.size());
         }
     }
 
@@ -68,8 +68,7 @@ public class StockService {
             log.info("[STOCK_CRAWLING] Last Price Date : {}", lastPriceDate);
 
             if (i==0 && stockIndexRepository.existsByLastSaleDate(lastPriceDate)) {
-                log.info("[STOCK_CRAWLING] Already registration stock index. last price date : {}",lastPriceDate);
-                throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, "해당 날짜의 주식 종가 데이터는 이미 등록되어있습니다. 날짜 : " + lastPriceDate);
+                throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, "[STOCK_CRAWLING] Already registration stock index. last price date : " + lastPriceDate);
             }
 
             List<StockDataResponseDto.Data.Table.Row> rows = resData.getData().getTable().getRows();

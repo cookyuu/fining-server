@@ -33,7 +33,7 @@ public class PortfolioService {
 
         if (portfolioRepository.existsByMemberAndStock(member, stock)){
             log.info("[ADD-PORTFOLIO] Already registered in the portfolio. ");
-            throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, "This Stock is already registered in Portfolio.");
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, "[ADD-PORTFOLIO] This Stock is already registered in Portfolio. Symbol : " + stock.getSymbol());
         }
         log.info("[ADD-PORTFOLIO] Insert Portfolio. member : {}, stock : {}", member.getEmail(), stock.getSymbol());
         portfolioRepository.save(new Portfolio(member, stock));
@@ -47,8 +47,7 @@ public class PortfolioService {
         Member member = memberRepository.findById(Long.parseLong(username)).orElseThrow(() ->
                 new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
         Portfolio portfolio = portfolioRepository.findByMemberAndStock(member,stock).orElseThrow(() ->
-                new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_PORTFOLIO,  "Fail to cancel Portfolio registration."));
-
+                new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_PORTFOLIO,  "[ADD-PORTFOLIO] Fail to cancel Portfolio registration. stock is not found in Portfolio. Symbol : " + stock.getSymbol()));
 
         try {
             log.info("[CANCEL-PORTFOLIO] Cancel Portfolio registration. member : {}, stock : {}", member.getEmail(), stock.getSymbol());

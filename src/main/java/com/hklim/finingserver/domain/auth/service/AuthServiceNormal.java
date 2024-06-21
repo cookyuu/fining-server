@@ -112,7 +112,7 @@ public class AuthServiceNormal implements AuthService {
         try {
             redisUtils.setDataExpire(RedisKeyType.LOGOUT_TOKEN.getSeparator()+accessToken, String.valueOf(true), Long.parseLong(logoutExpTime));
         } catch (RedisException e) {
-            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_LOGOUT, "로그아웃 처리를 실패했습니다. 다시 요청해주세요.");
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_LOGOUT, "[LOGOUT PROCESS] Logout failed. Please try again.");
         } finally {
             Cookie cookie = new Cookie("refresh_token", null);
             cookie.setMaxAge(0);
