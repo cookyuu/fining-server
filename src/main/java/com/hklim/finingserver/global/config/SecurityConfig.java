@@ -32,7 +32,7 @@ public class SecurityConfig {
             "/api/vi/member/**", "/api/v1/auth/**", "/api/v1/stock/**"
     };
     private static final String[] AUTH_ADMIN = {
-            "/api/v1/stock/scrap/**"
+            "/api/v1/stock/scrap/**", "/api/v1/indicator/scrap/**"
     };
 
     @Bean

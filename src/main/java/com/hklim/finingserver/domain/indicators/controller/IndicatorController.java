@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndicatorController {
     private final BondIndicatorService bondIndicatorService;
     private final StockIndicatorService stockIndicatorService;
-    @PostMapping("/bond")
+    @PostMapping("/scrap/bond")
     public ResponseEntity<ResponseDto<String>> scrapBondIndicatorData() {
         bondIndicatorService.insertData();
         return ResponseDto.ok("채권 지수 데이터 크롤링 성공!");
     }
 
-    @PostMapping("/stock")
+    @PostMapping("/scrap/stock")
     public ResponseEntity<ResponseDto<String>> scrapStockIndicatorData() {
         stockIndicatorService.insertData();
         return ResponseDto.ok("주가 지수 데이터 크롤링 성공!");
