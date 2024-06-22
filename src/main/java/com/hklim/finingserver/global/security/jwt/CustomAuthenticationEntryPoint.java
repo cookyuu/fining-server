@@ -25,7 +25,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.error("Not Authenticated Request", authException);
 
-        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.name(), "토큰 검증에 실패했습니다. 사용할 수 없는 토큰입니다. ErrorMsg : " + authException.getMessage());
+        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.name(), "[VALIDATE-TOKEN] Token verification failed. This token cannot be used. ErrorMsg : " + authException.getMessage());
 //        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.name(), "Authentication Exception. ");
 
         String resBody = objectMapper.writeValueAsString(errorResponse);

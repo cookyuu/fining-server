@@ -32,8 +32,13 @@ public class SecurityConfig {
             "/api/vi/member/**", "/api/v1/auth/**", "/api/v1/stock/**"
     };
     private static final String[] AUTH_ADMIN = {
-            "/api/v1/stock/scrap/**", "/api/v1/indicator/scrap/**"
+            "/api/v1/stock/scrap/**", "/api/v1/indicator/scrap/**", "/api/v1/auth/logout"
     };
+
+    private static final String[] AUTH_USER = {
+            "/api/v1/auth/logout", "/api/v1/portfolio/**"
+    };
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,6 +60,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(AUTH_ADMIN).hasRole("ADMIN")
+                .requestMatchers(AUTH_USER).hasRole("USER")
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated());
 
