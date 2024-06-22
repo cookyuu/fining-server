@@ -7,5 +7,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface StockIndexRepository extends JpaRepository<StockIndex, Long> {
-    boolean existsByLastSaleDate(LocalDate lastPriceDate);
+
+    boolean existsByAsOfDate(LocalDate asOfDate);
 }

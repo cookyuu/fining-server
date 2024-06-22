@@ -23,7 +23,7 @@ public class StockController {
     @PostMapping("/scrap/info")
     public ResponseEntity<ResponseDto<String>> insertStockDataFromCSV(@RequestBody InsertStockDataRequestDto insertStockDataInfo) {
         stockService.insertStockDataFromCSV(insertStockDataInfo);
-        return ResponseDto.ok("성공");
+        return ResponseDto.ok("주식 데이터 파일 크롤링 성공");
     }
 
     @PostMapping("/scrap/index")

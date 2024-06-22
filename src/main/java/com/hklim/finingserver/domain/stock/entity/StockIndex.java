@@ -23,7 +23,7 @@ public class StockIndex extends BaseEntity {
     private String marketCap;
     private String netChange;
     private String percentChange;
-    private LocalDate lastSaleDate;
+    private LocalDate asOfDate;
 
     @ManyToOne
     @JoinColumn(name = "stock_id")

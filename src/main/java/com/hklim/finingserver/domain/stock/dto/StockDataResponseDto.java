@@ -29,9 +29,6 @@ public class StockDataResponseDto {
         @JsonProperty("totalrecords")
         private int totalRecords;
 
-        @JsonProperty("asof")
-        private String asof;
-
         @Getter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Table {

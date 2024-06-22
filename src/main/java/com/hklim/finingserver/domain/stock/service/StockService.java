@@ -57,6 +57,15 @@ public class StockService {
     public void insertTotalData() {
         List<StockIndex> stockIndexList = new ArrayList<>();
 
+        LocalDate asOfDate = LocalDate.now();
+        log.info("[STOCK-CRAWLING] As Of Date : {}", asOfDate);
+
+        log.info("[INDICATOR-CRAWLING] Check if today's Stock Index Data has already been inserted.  Date : {}", LocalDate.now());
+        if (stockIndexRepository.existsByAsOfDate(asOfDate)) {
+            log.info("[STOCK-CRAWLING] Already registration stock index. last price date : {}",asOfDate);
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, "[STOCK-CRAWLING] Today's Stock Indicator data has already been inserted. Please try again tomorrow. ");
+        }
+
         for (int i=0; i<(maxCnt/1000); i++) {
             StockDataResponseDto resData = crawlerUtils.getTotalStockInfo(i);
             int statusCode = resData.getStatus().getRCode();
@@ -64,19 +73,13 @@ public class StockService {
             if (totalRecords/1000 < i) {
                 break;
             }
-            LocalDate lastPriceDate = convertAsofToLocalDate(resData.getData().getAsof());
-            log.info("[STOCK_CRAWLING] Last Price Date : {}", lastPriceDate);
-
-            if (i==0 && stockIndexRepository.existsByLastSaleDate(lastPriceDate)) {
-                throw new ApplicationErrorException(ApplicationErrorType.FAIL_CRAWLING_SAVE, "[STOCK_CRAWLING] Already registration stock index. last price date : " + lastPriceDate);
-            }
 
             List<StockDataResponseDto.Data.Table.Row> rows = resData.getData().getTable().getRows();
             log.info("[STOCK-CRAWLING] Response Status Code : {}", statusCode);
             log.info("[STOCK-CRAWLING] Crawling Data Total cnt : {}", totalRecords);
             log.info("[STOCK-CRAWLING] Crawling Data cnt : {}", rows.size());
 
-            convertStockIndexData(stockIndexList, rows, lastPriceDate);
+            convertStockIndexData(stockIndexList, rows, asOfDate);
             log.info("[STOCK-CRAWLING] Insert Stock Index. Insert data cnt : {}", stockIndexList.size());
         }
         try {
@@ -88,26 +91,13 @@ public class StockService {
         }
     }
 
-    private void convertStockIndexData(List<StockIndex> stockIndexList, List<StockDataResponseDto.Data.Table.Row> stockDataList, LocalDate lastPriceDate) {
+    private void convertStockIndexData(List<StockIndex> stockIndexList, List<StockDataResponseDto.Data.Table.Row> stockDataList, LocalDate asOfDate) {
         stockDataList.forEach(
                 stockData -> {
                     Stock stock = stockRepository.findBySymbol(stockData.getSymbol());
                     if (stock != null) {
-                        stockIndexList.add(new StockIndex(stockData.getLastsale(), stockData.getMarketCap(), stockData.getNetchange(), stockData.getPctchange(), lastPriceDate, stock));
+                        stockIndexList.add(new StockIndex(stockData.getLastsale(), stockData.getMarketCap(), stockData.getNetchange(), stockData.getPctchange(), asOfDate, stock));
                     }
                 });
-    }
-
-    private LocalDate convertAsofToLocalDate(String asof) {
-        log.info("[STOCK_CRAWLING] Convert LastPrice Type, String to LocalDate.");
-        String asOfDate = asof.replace("Last price as of ","").trim();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
-
-        try {
-            return LocalDate.parse(asOfDate, formatter);
-        } catch (DateTimeParseException e) {
-            log.info("[STOCK_CRAWLING] Fail to convert LastPrice Date. Error Message : {}", e.getMessage());
-        }
-        return null;
     }
 }
