@@ -4,6 +4,7 @@ import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.auth.service.AuthServiceNormal;
 import com.hklim.finingserver.domain.auth.service.MailService;
 import com.hklim.finingserver.global.dto.ResponseDto;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,12 @@ public class AuthController {
         return ResponseDto.ok("로그아웃이 정상처리 되었습니다.");
     }
 
+    @PatchMapping("/reissue")
+    public ResponseEntity<ResponseDto<AccessTokenResponseDto>> reissueAccessToken(HttpServletRequest request) {
+        return ResponseDto.ok(authServiceNormal.reissueAccessToken(request));
+
+    }
+
     @PostMapping("/email/auth-code")
     public ResponseEntity<ResponseDto<String>> sendEmailAuthCode(@RequestBody EmailAuthCodeRequestDto request) {
         mailService.sendEmail(request);
@@ -42,8 +49,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<LoginResponseDto>> loginNormal(@RequestBody LoginRequestDto loginInfo, HttpServletResponse response) {
-        LoginResponseDto res = authServiceNormal.login(loginInfo, response);
+    public ResponseEntity<ResponseDto<AccessTokenResponseDto>> loginNormal(@RequestBody LoginRequestDto loginInfo, HttpServletResponse response) {
+        AccessTokenResponseDto res = authServiceNormal.login(loginInfo, response);
         return ResponseDto.ok(res);
     }
 

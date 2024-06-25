@@ -1,6 +1,7 @@
 package com.hklim.finingserver.global.utils;
 
 import com.hklim.finingserver.domain.auth.dto.JwtUserInfo;
+import com.hklim.finingserver.domain.member.entity.RoleType;
 import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
@@ -73,6 +74,14 @@ public class JwtUtils {
         return parseClaims(token).get("memberId", Long.class);
     }
 
+    public String getEmail(String token) {
+        return parseClaims(token).get("email", String.class);
+    }
+
+    public String getRole(String token) {
+        return parseClaims(token).get("role", String.class);
+    }
+
     /*
     * JWT Claims 추출
     */
@@ -108,7 +117,8 @@ public class JwtUtils {
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_VALIDATION, "유효하지 않은 토큰입니다. ");
         } catch (ExpiredJwtException e) {
             log.info("[VALIDATE JWT TOKEN] Expired JWT Token. ", e);
-            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_VALIDATION, "토큰 유효기한이 만료되었습니다. ");
+            return false;
+//            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_VALIDATION, "토큰 유효기한이 만료되었습니다. ");
         } catch (UnsupportedJwtException e) {
             log.info("[VALIDATE JWT TOKEN] Unsupported JWT Token. ", e);
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_VALIDATION, "지원하지 않는 토큰입니다.");

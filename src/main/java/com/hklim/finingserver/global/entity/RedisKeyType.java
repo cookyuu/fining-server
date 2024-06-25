@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum RedisKeyType {
     AUTH_EMAIL("auth:email:")
-    ,LOGOUT_TOKEN("logout:token:");
+    ,LOGOUT_TOKEN("logout:token:")
+    ,REFRESH_TOKEN("refresh:token:");
     String separator;
 }

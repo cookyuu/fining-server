@@ -1,5 +1,8 @@
 package com.hklim.finingserver.global.utils;
 
+import com.hklim.finingserver.global.exception.ApplicationErrorException;
+import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import io.lettuce.core.RedisException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -17,8 +20,12 @@ public class RedisUtils {
 
     // key를 통해 Value 리턴
     public String getData(String key) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        return valueOperations.get(key);
+        try {
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            return valueOperations.get(key);
+        } catch (RedisException e) {
+            throw new ApplicationErrorException(ApplicationErrorType.REDIS_ERROR, "[REDIS-GET] Fail to get Data in Redis. ");
+        }
     }
 
     public void setData(String key, String value) {
@@ -28,14 +35,22 @@ public class RedisUtils {
 
     // 유효시간 동안 key,value 저장
     public void setDataExpire(String key, String value, long duration) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        Duration expiredDuration = Duration.ofSeconds(duration);
-        valueOperations.set(key, value, expiredDuration);
+        try {
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            Duration expiredDuration = Duration.ofSeconds(duration);
+            valueOperations.set(key, value, expiredDuration);
+        } catch (RedisException e) {
+            throw new ApplicationErrorException(ApplicationErrorType.REDIS_ERROR, "[REDIS-SAVE] Fail to save Data in Redis. ");
+        }
     }
 
     // 삭제
     public void deleteData(String key) {
-        redisTemplate.delete(key);
+        try {
+            redisTemplate.delete(key);
+        } catch (RedisException e) {
+            throw new ApplicationErrorException(ApplicationErrorType.REDIS_ERROR, "[REDIS-DELETE] Fail to delete data in Redis. ");
+        }
     }
 
 }

@@ -1,8 +1,15 @@
 package com.hklim.finingserver.global.security.jwt;
 
+import com.hklim.finingserver.domain.auth.dto.JwtUserInfo;
+import com.hklim.finingserver.global.entity.RedisKeyType;
+import com.hklim.finingserver.global.exception.ApplicationErrorException;
+import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import com.hklim.finingserver.global.utils.CookieUtils;
 import com.hklim.finingserver.global.utils.JwtUtils;
+import com.hklim.finingserver.global.utils.RedisUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +36,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         logger.info("[VALIDATE-TOKEN] Authorization Code : " + authorizationHeader);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
-            if (jwtUtils.validateToken(token)) {
-                Long userId = jwtUtils.getUserId(token);
+            String accessToken = authorizationHeader.substring(7);
+            if (jwtUtils.validateToken(accessToken)) {
+                Long userId = jwtUtils.getUserId(accessToken);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
                 if (userDetails != null) {
                     // UserDetails, Password, Role - 접근 권한 인증 Token 생성
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
                     // Request의 Security Context에 접근 권한 설정
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }

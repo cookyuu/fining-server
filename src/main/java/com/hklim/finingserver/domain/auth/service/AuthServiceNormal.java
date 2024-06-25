@@ -2,21 +2,23 @@ package com.hklim.finingserver.domain.auth.service;
 
 import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.member.entity.Member;
+import com.hklim.finingserver.domain.member.entity.RoleType;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
 import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import com.hklim.finingserver.global.utils.CookieUtils;
 import com.hklim.finingserver.global.utils.JwtUtils;
 import com.hklim.finingserver.global.utils.RedisUtils;
 import io.lettuce.core.RedisException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +57,7 @@ public class AuthServiceNormal implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final RedisUtils redisUtils;
+    private final CookieUtils cookieUtils;
 
     @Override
     @Transactional
@@ -75,7 +78,7 @@ public class AuthServiceNormal implements AuthService {
 
     @Override
     @Transactional
-    public LoginResponseDto login(LoginRequestDto loginInfo, HttpServletResponse response) {
+    public AccessTokenResponseDto login(LoginRequestDto loginInfo, HttpServletResponse response) {
         String email = loginInfo.getEmail();
         String password = loginInfo.getPassword();
         Member member = memberRepository.findByEmail(email).orElseThrow(()->
@@ -88,11 +91,12 @@ public class AuthServiceNormal implements AuthService {
         JwtUserInfo userInfo = new JwtUserInfo();
         userInfo.toDto(member);
 
+        log.info("[NORMAL-LOGIN] Create Access token. ");
         String accessToken = jwtUtils.createAccessToken(userInfo);
+        log.info("[NORMAL-LOGIN] Create Refresh token. ");
         String refreshToken = jwtUtils.createRefreshToken(userInfo);
 
         Cookie cookie = new Cookie("refresh_token", refreshToken);
-
         cookie.setMaxAge(Integer.parseInt(refreshTokenExpTime));
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
@@ -100,7 +104,13 @@ public class AuthServiceNormal implements AuthService {
 
         response.addCookie(cookie);
 
-        return LoginResponseDto.builder()
+        try {
+            redisUtils.setDataExpire(RedisKeyType.REFRESH_TOKEN.getSeparator() + member.getEmail(), refreshToken, Long.parseLong(refreshTokenExpTime)/1000);
+        } catch (Exception e) {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_TO_SAVE_DATA, e);
+        }
+
+        return AccessTokenResponseDto.builder()
                 .accessToken(accessToken)
                 .build();
     }
@@ -121,13 +131,64 @@ public class AuthServiceNormal implements AuthService {
         log.info("[LOGOUT PROCESS] Set accessToken to logout token list, END");
     }
 
+    @Override
+    public AccessTokenResponseDto reissueAccessToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        log.info("[REISSUE-TOKEN] Reissue Access Token Process Start. ");
+        String refreshToken = "";
+        String accessToken = "";
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7);
+        } else {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_REISSUE, "[REISSUE-TOKEN] Access Token is Empty. ");
+        }
+
+        String userEmail = jwtUtils.getEmail(accessToken);
+        Long userId = jwtUtils.getUserId(accessToken);
+        RoleType role = RoleType.valueOf(jwtUtils.getRole(accessToken));
+
+        if (cookies == null) {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_REISSUE, "[REISSUE-TOKEN] Refresh Token is Empty in cookie. Please login again. ");
+        }
+        refreshToken = cookieUtils.getValue(cookies, "refresh_token");
+
+        log.info("[REISSUE-TOKEN] Refresh token validate. ");
+        if (!jwtUtils.validateToken(refreshToken)) {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_REISSUE, "[REISSUE-TOKEN] Refresh Token is Expired. Please login again. ");
+        }
+
+        log.info("[REISSUE-TOKEN] Refresh Token compare with saved Data");
+        String savedRefreshToken = redisUtils.getData(RedisKeyType.REFRESH_TOKEN.getSeparator()+userEmail);
+        if (savedRefreshToken == null) {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_REISSUE, "[REISSUE-TOKEN] Saved Refresh token is empty. Please login again. ");
+        }
+        if (savedRefreshToken.equals(refreshToken)) {
+            JwtUserInfo userInfo = JwtUserInfo.builder()
+                    .memberId(userId)
+                    .email(userEmail)
+                    .role(role)
+                    .build();
+            log.info("[REISSUE-TOKEN] Access token reissue. ");
+            String newAccessToken = jwtUtils.createAccessToken(userInfo);
+            return AccessTokenResponseDto.builder()
+                    .accessToken(newAccessToken)
+                    .build();
+        } else {
+            log.info("[REISSUE-TOKEN] Refresh token is not matching. Refresh token reset.");
+            redisUtils.deleteData(RedisKeyType.REFRESH_TOKEN.getSeparator()+userEmail);
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_REISSUE, "[REISSUE-TOKEN] Refresh Token does not match. Please login again. ");
+        }
+    }
+
+
     private void chkSignupValidation(String email) {
-        log.info("[SIGNUP PROCESS] Check Email Validation START ");
+        log.info("[SIGNUP-PROCESS] Check Email Validation ");
         if (memberRepository.existsByEmail(email)) {
             throw new ApplicationErrorException(ApplicationErrorType.DATA_DUPLICATED_ERROR,
-                    "[SIGNUP PROCESS] Email is Duplicated, Please check again.");
+                    "[SIGNUP-PROCESS] Email is Duplicated, Please check again.");
         }
-        log.info("[SIGNUP PROCESS] Check Email Validation END, SUCCESS! ");
+        log.info("[SIGNUP-PROCESS] Validation Check, SUCCESS! ");
     }
 
     public InquiryEmailResponseDto inquiryEmail(InquiryEmailRequestDto inquiryEmailInfo) {

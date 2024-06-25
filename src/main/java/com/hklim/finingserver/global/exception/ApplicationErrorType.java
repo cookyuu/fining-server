@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ApplicationErrorType {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "System error occurred. ")
+    ,REDIS_ERROR(HttpStatus.BAD_REQUEST, "Redis error occurred. ")
     ,EMPTY_RESULT_DATA_ERROR(HttpStatus.NOT_FOUND, "Fail to find Result Data, Try again. ")
     ,INVALID_DATA_ARGUMENT(HttpStatus.BAD_REQUEST, "Invalid Data Argument. ")
 
@@ -23,11 +24,13 @@ public enum ApplicationErrorType {
     ,NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "Fail to find Member. Member is not exists. ")
     ,NOT_FOUND_DATA(HttpStatus.NOT_FOUND, "Fail to find Data. ")
 
+    ,FAIL_JWT_REISSUE(HttpStatus.BAD_REQUEST, "Fail to reissue accessToken. ")
     ,FAIL_JWT_VALIDATION_LOGOUT(HttpStatus.BAD_REQUEST, "Already logged out jwt. ")
     ,FAIL_JWT_LOGOUT(HttpStatus.INTERNAL_SERVER_ERROR, "JWT token logout Failure. ")
     ,FAIL_JWT_VALIDATION(HttpStatus.UNAUTHORIZED, "Fail to validate JWT Token. ")
     ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ")
     ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during crawling process. ");
+
 
 
     private HttpStatus httpStatus;
