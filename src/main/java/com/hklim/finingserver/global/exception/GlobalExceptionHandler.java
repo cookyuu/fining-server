@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponseDto> handleException(WebRequest request, Exception e) {
-        log.error("[Exception] {}", e.getMessage());
+        log.error("[Exception] ", e);
         var response = new ErrorResponseDto(ApplicationErrorType.INTERNAL_ERROR.name(), e.getMessage());
         return new ResponseEntity<>(response, ApplicationErrorType.INTERNAL_ERROR.getHttpStatus());
     }

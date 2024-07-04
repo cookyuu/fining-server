@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,22 +21,20 @@ public class MainUiService {
 
 
     public MainUiDataResponseDto getMainUiData(UserDetails user) {
-
+        List<MainUiDataResponseDto.StockData> resPortfolioDataList = new ArrayList<>();
         if (user != null) {
             // 포트폴리오 데이터 가져오기
-            List<MainUiDataResponseDto.StockData> resPortfolioDataList = portfolioService.getPortfolioStocks(user.getUsername());
+            resPortfolioDataList = portfolioService.getPortfolioStocks(user.getUsername());
         }
-        // 오늘 주식 Top 6 정보
-        List<MainUiDataResponseDto.StockData> resStockDataList = stockService.getTopSixStocksOfToday();
+        // 오늘 주식 Top 10 정보
+        List<MainUiDataResponseDto.StockData> resStockDataList = stockService.getTopTenStocksOfToday();
         // 오늘 지수정보
         List<MainUiDataResponseDto.IndicatorData> resIndicatorDateList = indicatorService.getIndicatorOfToday();
-        MainUiDataResponseDto res = MainUiDataResponseDto.builder()
-                .portfolioList(resStockDataList)
+        return MainUiDataResponseDto.builder()
+                .portfolioList(resPortfolioDataList)
                 .stockList(resStockDataList)
                 .indicatorDataList(resIndicatorDateList)
                 .asOfDate(LocalDate.now())
                 .build();
-
-        return null;
     }
 }

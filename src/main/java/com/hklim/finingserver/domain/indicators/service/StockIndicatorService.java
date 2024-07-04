@@ -10,6 +10,7 @@ import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.CrawlerUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Primary
 public class StockIndicatorService extends CommonIndicatorService implements IndicatorService{
     private final IndicatorRepository indicatorRepository;
     private final IndicatorIndexRepository indicatorIndexRepository;

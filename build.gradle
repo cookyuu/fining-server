@@ -43,10 +43,10 @@ dependencies {
 			'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// jackson JSON Parser
-//	implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
-//	implementation 'com.fasterxml.jackson.core:jackson:2.17.0'
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
-	implementation 'com.fasterxml.jackson.core:jackson'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.17.0'
+//	implementation 'com.fasterxml.jackson.core:jackson-databind'
+//	implementation 'com.fasterxml.jackson.core:jackson'
 
 
 	// model mapper

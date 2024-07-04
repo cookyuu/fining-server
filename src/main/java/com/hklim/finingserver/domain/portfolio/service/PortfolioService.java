@@ -2,34 +2,41 @@ package com.hklim.finingserver.domain.portfolio.service;
 
 import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
+import com.hklim.finingserver.domain.member.service.MemberService;
 import com.hklim.finingserver.domain.portfolio.dto.AddPortfolioDto;
 import com.hklim.finingserver.domain.portfolio.dto.CancelPortfolioDto;
 import com.hklim.finingserver.domain.portfolio.entity.Portfolio;
 import com.hklim.finingserver.domain.portfolio.repository.PortfolioRepository;
 import com.hklim.finingserver.domain.stock.entity.Stock;
+import com.hklim.finingserver.domain.stock.entity.StockIndex;
+import com.hklim.finingserver.domain.stock.repository.StockIndexRepository;
 import com.hklim.finingserver.domain.stock.repository.StockRepository;
+import com.hklim.finingserver.domain.stock.service.StockService;
+import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
-    private final StockRepository stockRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+    private final StockService stockService;
 
     public void addPortfolio(String username, AddPortfolioDto.Request addPortfolioData) {
-        Stock stock = stockRepository.findBySymbol(addPortfolioData.getStockSymbol());
+        Stock stock = stockService.findBySymbol(addPortfolioData.getStockSymbol());
         if (stock == null) {
             throw new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_STOCK);
         }
-
-        Member member = memberRepository.findById(Long.parseLong(username)).orElseThrow(() ->
-                new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
+        Member member = memberService.findMemberById(Long.parseLong(username));
 
         if (portfolioRepository.existsByMemberAndStock(member, stock)){
             log.info("[ADD-PORTFOLIO] Already registered in the portfolio. ");
@@ -40,12 +47,11 @@ public class PortfolioService {
     }
 
     public void cancelPortfolio(String username, CancelPortfolioDto.Request cancelPortfolioData) {
-        Stock stock = stockRepository.findBySymbol(cancelPortfolioData.getStockSymbol());
+        Stock stock = stockService.findBySymbol(cancelPortfolioData.getStockSymbol());
         if (stock == null) {
             throw new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_STOCK);
         }
-        Member member = memberRepository.findById(Long.parseLong(username)).orElseThrow(() ->
-                new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
+        Member member = memberService.findMemberById(Long.parseLong(username));
         Portfolio portfolio = portfolioRepository.findByMemberAndStock(member,stock).orElseThrow(() ->
                 new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_PORTFOLIO,  "[ADD-PORTFOLIO] Fail to cancel Portfolio registration. stock is not found in Portfolio. Symbol : " + stock.getSymbol()));
 
@@ -55,5 +61,24 @@ public class PortfolioService {
         } catch (Exception e) {
             log.info("[CANCEL-PORTFOLIO] Fail to cancel Portfolio registration. Error message : {}", e.getMessage());
         }
+    }
+
+    public List<MainUiDataResponseDto.StockData> getPortfolioStocks(String username) {
+        // 포트폴리오
+        List<MainUiDataResponseDto.StockData> portfolioDataList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        Member member = memberService.findMemberById(Long.parseLong(username));
+
+        // portfolios 조회할때
+        List<Portfolio> portfolios = portfolioRepository.findAllByMember(member);
+
+        portfolios.forEach(portfolio ->
+                portfolioDataList.add(stockService.getPortfolioStockData(portfolio))
+                );
+        return portfolioDataList;
+    }
+
+    public List<Portfolio> findAllByMember(Member member) {
+        return portfolioRepository.findAllByMember(member);
     }
 }

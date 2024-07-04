@@ -3,7 +3,14 @@ package com.hklim.finingserver.domain.stock.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hklim.finingserver.domain.member.entity.Member;
+import com.hklim.finingserver.domain.member.service.MemberService;
+import com.hklim.finingserver.domain.portfolio.entity.Portfolio;
+import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
+import com.hklim.finingserver.domain.stock.entity.Stock;
+import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
+import com.hklim.finingserver.global.dto.ResponseDto;
 import com.hklim.finingserver.global.utils.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +26,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Locale;
 
 @SpringBootTest
@@ -29,11 +37,16 @@ class StockServiceTest {
     FileUtils fileUtils;
     @Autowired
     StockService stockService;
+    @Autowired
+    MemberService memberService;
+    @Autowired
+    PortfolioService portfolioService;
 
     @BeforeEach
     void beforeEach() {
 
     }
+
     @Test
     public void collectStockDataTest() throws IOException {
         String filePath = "/Users/HK/Downloads";
@@ -80,8 +93,31 @@ class StockServiceTest {
         }
 
         StockDataResponseDto data = toTotalStockDataDto(docs.body());
-        log.info("Data : {}", data.getData().getTable().getRows().get(0).getName());
+        List<StockDataResponseDto.Data.Table.Row> stockDataList = data.getData().getTable().getRows();
+        stockDataList.forEach(stock ->
+                log.info("Symbol : {}, Name : {}, MarkeyCap : {}, pctChange : {}", stock.getSymbol(), stock.getName(),
+                        stock.getMarketCap(), stock.getPctchange()));
 
+    }
+
+    @Test
+    public void getPortfolioStockDataTest() {
+        Member member = memberService.findMemberById(3L);
+        List<Portfolio> portfolioList = portfolioService.findAllByMember(member);
+        for (Portfolio portfolio : portfolioList) {
+            MainUiDataResponseDto.StockData data = stockService.getPortfolioStockData(portfolio);
+            log.info("Symbol : {}, Name : {}, LastPrice : {}, percent : {}%", data.getSymbol(), data.getName(), data.getLastSale(), data.getPercentChange());
+        }
+    }
+
+    @Test
+    public void getTopSixStocksOfTodayTest() {
+        List<MainUiDataResponseDto.StockData> stockDataList = stockService.getTopTenStocksOfToday();
+        log.info("Data Cnt : {}", stockDataList.size());
+        for (MainUiDataResponseDto.StockData stockData : stockDataList) {
+            log.info("Symbol : {}, Name : {}, MarketCap : {}, LastSale : {}, PercentChange : {}", stockData.getSymbol(), stockData.getName(),stockData.getMarketCap(), stockData.getLastSale(),stockData.getPercentChange());
+
+        }
     }
 
     private StockDataResponseDto toTotalStockDataDto(String stockData) {

@@ -1,5 +1,6 @@
 package com.hklim.finingserver.domain.stock.service;
 
+import com.hklim.finingserver.domain.portfolio.entity.Portfolio;
 import com.hklim.finingserver.domain.stock.dto.InsertStockDataRequestDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataFromCSVDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
@@ -7,6 +8,7 @@ import com.hklim.finingserver.domain.stock.entity.Stock;
 import com.hklim.finingserver.domain.stock.entity.StockIndex;
 import com.hklim.finingserver.domain.stock.repository.StockIndexRepository;
 import com.hklim.finingserver.domain.stock.repository.StockRepository;
+import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.CrawlerUtils;
@@ -19,11 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Slf4j
 @Service
@@ -79,7 +78,7 @@ public class StockService {
             log.info("[STOCK-CRAWLING] Crawling Data Total cnt : {}", totalRecords);
             log.info("[STOCK-CRAWLING] Crawling Data cnt : {}", rows.size());
 
-            convertStockIndexData(stockIndexList, rows, asOfDate);
+            convertCrawlingDataToStockIndexList(stockIndexList, rows);
             log.info("[STOCK-CRAWLING] Insert Stock Index. Insert data cnt : {}", stockIndexList.size());
         }
         try {
@@ -91,13 +90,49 @@ public class StockService {
         }
     }
 
-    private void convertStockIndexData(List<StockIndex> stockIndexList, List<StockDataResponseDto.Data.Table.Row> stockDataList, LocalDate asOfDate) {
+    public Stock findBySymbol(String symbol){
+        return stockRepository.findBySymbol(symbol);
+    }
+
+    public MainUiDataResponseDto.StockData getPortfolioStockData(Portfolio portfolio) {
+        Stock stock = portfolio.getStock();
+        StockIndex stockIndex = stockIndexRepository.findByStockAndAsOfDate(stock, LocalDate.now());
+        return MainUiDataResponseDto.StockData.builder()
+                .stockId(stock.getId())
+                .symbol(stock.getSymbol())
+                .name(stock.getName())
+                .lastSale(stockIndex.getLastSale())
+                .marketCap(stockIndex.getMarketCap())
+                .netChange(stockIndex.getNetChange())
+                .percentChange(stockIndex.getPercentChange())
+                .build();
+    }
+
+    public List<MainUiDataResponseDto.StockData> getTopTenStocksOfToday() {
+        List<StockIndex> stockIndexList = stockIndexRepository.findTop10ByAsOfDateOrderByMarketCapDesc(LocalDate.now());
+        return convertStockIndexToMainStockData(stockIndexList);
+    }
+
+    private void convertCrawlingDataToStockIndexList(List<StockIndex> stockIndexList, List<StockDataResponseDto.Data.Table.Row> stockDataList) {
         stockDataList.forEach(
                 stockData -> {
-                    Stock stock = stockRepository.findBySymbol(stockData.getSymbol());
+                    Stock stock = findBySymbol(stockData.getSymbol());
                     if (stock != null) {
-                        stockIndexList.add(new StockIndex(stockData.getLastsale(), stockData.getMarketCap(), stockData.getNetchange(), stockData.getPctchange(), asOfDate, stock));
+                        stockIndexList.add(new StockIndex(stockData.getLastsale(), convertMarketCapStrToLong(stockData.getMarketCap()), stockData.getNetchange(), stockData.getPctchange(), LocalDate.now(), stock));
                     }
                 });
+    }
+
+    private List<MainUiDataResponseDto.StockData> convertStockIndexToMainStockData(List<StockIndex> stockIndexList) {
+        List<MainUiDataResponseDto.StockData> mainStockDataList = new ArrayList<>();
+        stockIndexList.forEach(stockIndex -> {
+            mainStockDataList.add(new MainUiDataResponseDto.StockData(stockIndex.getStock().getId(), stockIndex.getStock().getSymbol(),stockIndex.getStock().getName()
+            ,stockIndex.getLastSale(), stockIndex.getMarketCap(), stockIndex.getNetChange(), stockIndex.getPercentChange()));
+        });
+        return mainStockDataList;
+    }
+
+    private Long convertMarketCapStrToLong(String strMarketCap) {
+        return strMarketCap==null || strMarketCap.equals("NA") ? 0L : Long.parseLong(strMarketCap.replace(",", ""));
     }
 }

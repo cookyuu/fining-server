@@ -27,7 +27,7 @@ public class MainUiDataResponseDto {
         private String symbol;
         private String name;
         private String lastSale;
-        private String marketCap;
+        private Long marketCap;
         private String netChange;
         private String percentChange;
     }

@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/vi/member/**", "/api/v1/auth/**", "/api/v1/stock/**"
+            "/api/vi/member/**", "/api/v1/auth/**", "/api/v1/stock/**", "/api/v1/ui/main/**"
     };
     private static final String[] AUTH_ADMIN = {
             "/api/v1/stock/scrap/**", "/api/v1/indicator/scrap/**", "/api/v1/auth/logout"
@@ -59,9 +59,9 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler));
 
         http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(AUTH_WHITELIST).permitAll()
                 .requestMatchers(AUTH_ADMIN).hasRole("ADMIN")
                 .requestMatchers(AUTH_USER).hasRole("USER")
-                .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated());
 
         return http.build();

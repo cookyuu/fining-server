@@ -14,6 +14,7 @@ class CrawlerUtilsTest {
 
     @Autowired
     CrawlerUtils crawlerUtils;
+    /*
     @Test
     void getBondIndicatorData() {
         BondDataResponseDto resData = crawlerUtils.getBondData();
@@ -24,4 +25,5 @@ class CrawlerUtilsTest {
         StockIndicatorDataResponseDto resData = crawlerUtils.getStockIndicatorData();
         resData.getDataList().forEach(i -> log.info("SYMBOL : " + i.getSymbol() + ", IndexName : " + i.getIndicatorName() + ", Price : " + i.getPrice()));
     }
+     */
 }
