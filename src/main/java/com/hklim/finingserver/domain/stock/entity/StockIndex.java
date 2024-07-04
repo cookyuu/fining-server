@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class StockIndex extends BaseEntity {
 
     private String lastSale;
-    private String marketCap;
+    private Long marketCap;
     private String netChange;
     private String percentChange;
     private LocalDate asOfDate;

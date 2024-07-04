@@ -49,7 +49,7 @@ public class StockDataFromCSVDto {
     public StockIndex toStockIndexEntity(Stock stock) {
         return StockIndex.builder()
                 .lastSale(this.lastSale)
-                .marketCap(this.marketCap)
+                .marketCap(Long.parseLong(this.marketCap))
                 .netChange(this.netChange)
                 .percentChange(this.change)
                 .stock(stock)
