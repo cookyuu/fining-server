@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MainUiService {
+public class UiService {
     private final PortfolioService portfolioService;
     private final StockService stockService;
     private final CommonIndicatorService indicatorService;

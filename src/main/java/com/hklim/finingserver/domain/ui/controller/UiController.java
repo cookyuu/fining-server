@@ -1,7 +1,7 @@
 package com.hklim.finingserver.domain.ui.controller;
 
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
-import com.hklim.finingserver.domain.ui.service.MainUiService;
+import com.hklim.finingserver.domain.ui.service.UiService;
 import com.hklim.finingserver.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/ui/main")
-public class MainController {
-    private final MainUiService mainUiService;
-    @GetMapping("")
+@RequestMapping("/api/v1/ui")
+public class UiController {
+    private final UiService uiService;
+    @GetMapping("/main")
     public ResponseEntity<ResponseDto<MainUiDataResponseDto>> getMainUiData(@AuthenticationPrincipal UserDetails user) {
-        return ResponseDto.ok(mainUiService.getMainUiData(user));
+        return ResponseDto.ok(uiService.getMainUiData(user));
     }
 }
