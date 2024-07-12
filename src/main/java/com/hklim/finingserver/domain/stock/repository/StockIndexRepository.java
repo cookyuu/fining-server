@@ -15,4 +15,6 @@ public interface StockIndexRepository extends JpaRepository<StockIndex, Long> {
     StockIndex findByStockAndAsOfDate(Stock stock, LocalDate today);
 
     List<StockIndex> findTop10ByAsOfDateOrderByMarketCapDesc(LocalDate now);
+
+    List<StockIndex> findAllByStock(Stock stock);
 }

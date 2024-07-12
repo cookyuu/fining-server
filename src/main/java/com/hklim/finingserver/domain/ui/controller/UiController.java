@@ -1,6 +1,7 @@
 package com.hklim.finingserver.domain.ui.controller;
 
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
+import com.hklim.finingserver.domain.ui.dto.StockDetailUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.service.UiService;
 import com.hklim.finingserver.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +21,10 @@ public class UiController {
     @GetMapping("/main")
     public ResponseEntity<ResponseDto<MainUiDataResponseDto>> getMainUiData(@AuthenticationPrincipal UserDetails user) {
         return ResponseDto.ok(uiService.getMainUiData(user));
+    }
+
+    @GetMapping("/stock/{symbol}")
+    public ResponseEntity<ResponseDto<StockDetailUiDataResponseDto>> getStockDetailUiData(@PathVariable(value = "symbol") String symbol) {
+        return ResponseDto.ok(uiService.getStockDetailData(symbol));
     }
 }

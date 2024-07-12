@@ -91,6 +91,7 @@ public class StockService {
     }
 
     public Stock findBySymbol(String symbol){
+        log.info("[FIND-STOCK-DATA] Find Stock data By Symbol, Symbol : {}", symbol);
         return stockRepository.findBySymbol(symbol);
     }
 
@@ -134,5 +135,11 @@ public class StockService {
 
     private Long convertMarketCapStrToLong(String strMarketCap) {
         return strMarketCap==null || strMarketCap.equals("NA") ? 0L : Long.parseLong(strMarketCap.replace(",", ""));
+    }
+
+    public List<StockIndex> getAllIndexOfStock(Stock stock) {
+        List<StockIndex> stockIndexList = stockIndexRepository.findAllByStock(stock);
+        log.info("[FIND-STOCK-INDEX-ALL] Find Stock Index Cnt : {}, Symbol : {}",stockIndexList.size(), stock.getSymbol());
+        return stockIndexList;
     }
 }
