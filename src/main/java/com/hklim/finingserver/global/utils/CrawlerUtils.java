@@ -3,7 +3,7 @@ package com.hklim.finingserver.global.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hklim.finingserver.domain.indicators.dto.BondDataResponseDto;
-import com.hklim.finingserver.domain.indicators.dto.StockIndicatorDataResponseDto;
+import com.hklim.finingserver.domain.indicators.dto.StockIndicatorsDataResponseDto;
 import com.hklim.finingserver.domain.stock.dto.SingleStockDataResponseDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -104,7 +104,7 @@ public class CrawlerUtils {
         return toDto(new BondDataResponseDto(), docs.body());
     }
 
-    public StockIndicatorDataResponseDto getStockIndicatorData() {
+    public StockIndicatorsDataResponseDto getStockIndicatorData() {
         Connection.Response docs = null;
         try {
             docs = Jsoup.connect(stockIndicatorUrl)
@@ -115,7 +115,7 @@ public class CrawlerUtils {
             throw new RuntimeException(e);
         }
 
-        return toDto(new StockIndicatorDataResponseDto(), docs.body());
+        return toDto(new StockIndicatorsDataResponseDto(), docs.body());
     }
 
     private <T> T toDto(T dto, String bondData) {

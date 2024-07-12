@@ -10,13 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class CommonIndicatorServiceTest {
-    Logger log = LogManager.getLogger(CommonIndicatorServiceTest.class);
+class CommonIndicatorsServiceTest {
+    Logger log = LogManager.getLogger(CommonIndicatorsServiceTest.class);
     @Autowired
-    CommonIndicatorService commonIndicatorService;
+    CommonIndicatorsService commonIndicatorsService;
     @Test
     void getIndicatorOfToday() {
-        List<MainUiDataResponseDto.IndicatorData> indicatorDataList = commonIndicatorService.getIndicatorOfToday();
+        List<MainUiDataResponseDto.IndicatorData> indicatorDataList = commonIndicatorsService.getIndicatorOfToday();
         log.info("Indicator Cnt : {}", indicatorDataList.size());
         indicatorDataList.forEach(indicatorData -> {
             log.info("Name : {}, Symbol : {}, IndicatorType : {}, NetChange : {}, PercentChange : {}, Price : {}",

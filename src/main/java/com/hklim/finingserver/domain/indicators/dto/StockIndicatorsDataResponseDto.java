@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StockIndicatorDataResponseDto {
+public class StockIndicatorsDataResponseDto {
     @JsonProperty("datas")
     private List<Data> dataList;
 
@@ -20,7 +20,7 @@ public class StockIndicatorDataResponseDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data{
         @JsonProperty("indexName")
-        private String IndicatorName;
+        private String IndicatorsName;
         @JsonProperty("closePrice")
         private String price;
         @JsonProperty("compareToPreviousClosePrice")

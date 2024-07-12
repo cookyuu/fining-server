@@ -14,15 +14,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IndicatorIndex extends BaseEntity {
+public class IndicatorsIndex extends BaseEntity {
     private String netChange;
     private String percentChange;
     private String price;
     private LocalDate asOfDate;
     @Enumerated(EnumType.STRING)
-    private IndicatorType indicatorType;
+    private IndicatorsType indicatorsType;
 
     @ManyToOne
-    @JoinColumn(name = "indicator_id")
-    private Indicator indicator;
+    @JoinColumn(name = "indicators_id")
+    private Indicators indicators;
 }

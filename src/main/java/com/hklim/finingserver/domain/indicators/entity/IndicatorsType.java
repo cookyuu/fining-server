@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum IndicatorType {
+public enum IndicatorsType {
     BOND("BOND"), STOCK("STOCK"), RAW_MATERIAL("RAW_MATERIAL")
     ,EXCHANGE_RATE("EXCHANGE_RATE");
     String value;

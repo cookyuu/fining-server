@@ -20,7 +20,7 @@ public class BondDataResponseDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data {
         @JsonProperty("name")
-        private String IndicatorName;
+        private String IndicatorsName;
         @JsonProperty("closePrice")
         private String price;
         @JsonProperty("fluctuations")
