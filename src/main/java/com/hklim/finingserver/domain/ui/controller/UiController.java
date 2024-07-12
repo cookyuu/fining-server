@@ -1,5 +1,6 @@
 package com.hklim.finingserver.domain.ui.controller;
 
+import com.hklim.finingserver.domain.ui.dto.IndicatorsDetailUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.StockDetailUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.service.UiService;
@@ -26,5 +27,10 @@ public class UiController {
     @GetMapping("/stock/{symbol}")
     public ResponseEntity<ResponseDto<StockDetailUiDataResponseDto>> getStockDetailUiData(@PathVariable(value = "symbol") String symbol) {
         return ResponseDto.ok(uiService.getStockDetailData(symbol));
+    }
+
+    @GetMapping("/indicators/{symbol}")
+    public ResponseEntity<ResponseDto<IndicatorsDetailUiDataResponseDto>> getIndicatorsDetailUiData(@PathVariable(value = "symbol") String symbol) {
+        return ResponseDto.ok(uiService.getIndicatorDetailData(symbol));
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface IndicatorIndexRepository extends JpaRepository<IndicatorsIndex, Long> {
-    boolean existsByAsOfDateAndIndicatorType(LocalDate now, IndicatorsType indicatorsType);
+public interface IndicatorsIndexRepository extends JpaRepository<IndicatorsIndex, Long> {
+    boolean existsByAsOfDateAndIndicatorsType(LocalDate now, IndicatorsType indicatorsType);
 
     List<IndicatorsIndex> findAllByAsOfDate(LocalDate now);
 

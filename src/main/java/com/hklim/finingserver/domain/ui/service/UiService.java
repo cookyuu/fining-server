@@ -1,10 +1,13 @@
 package com.hklim.finingserver.domain.ui.service;
 
-import com.hklim.finingserver.domain.indicators.service.CommonIndicatorService;
+import com.hklim.finingserver.domain.indicators.entity.Indicators;
+import com.hklim.finingserver.domain.indicators.entity.IndicatorsIndex;
+import com.hklim.finingserver.domain.indicators.service.CommonIndicatorsService;
 import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.domain.stock.entity.Stock;
 import com.hklim.finingserver.domain.stock.entity.StockIndex;
 import com.hklim.finingserver.domain.stock.service.StockService;
+import com.hklim.finingserver.domain.ui.dto.IndicatorsDetailUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.StockDetailUiDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
@@ -24,7 +27,7 @@ import java.util.List;
 public class UiService {
     private final PortfolioService portfolioService;
     private final StockService stockService;
-    private final CommonIndicatorService indicatorService;
+    private final CommonIndicatorsService indicatorService;
 
 
     public MainUiDataResponseDto getMainUiData(UserDetails user) {
@@ -66,6 +69,22 @@ public class UiService {
                 .indexList(resStockDetailList)
                 .build();
     }
+    public IndicatorsDetailUiDataResponseDto getIndicatorDetailData(String symbol) {
+        log.info("[INDICATORS-DETAIL-UI-DATA] Find Indicators Detail UI Data, Symbol : {}", symbol);
+        Indicators indicators = indicatorService.findBySymbol(symbol);
+        if (indicators == null) {
+            throw new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_INDICATORS, "[INDICATORS-DETAIL-UI-DATA] Not Found Indicators Data, Symbol : {"+symbol+"}");
+        }
+        List<IndicatorsIndex> indicatorsIndexList = indicatorService.getAllIndexOfIndicators(indicators);
+        List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> resIndicatorsIndexList = convertToUiIndicatorsIdxList(indicatorsIndexList);
+
+        return IndicatorsDetailUiDataResponseDto.builder()
+                .name(indicators.getName())
+                .symbol(indicators.getSymbol())
+                .indicatorsType(indicators.getIndicatorsType())
+                .indicatorsIndexDataList(resIndicatorsIndexList)
+                .build();
+    }
 
     private List<StockDetailUiDataResponseDto.StockDetailIndexData> convertToUiStockIdxList(List<StockIndex> stockIdxList) {
         log.info("[CONVERT-UI-DATA] Convert to UI Stock Index List");
@@ -80,5 +99,18 @@ public class UiService {
                     .build());
         });
         return detailIndexDataList;
+    }
+
+    private List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> convertToUiIndicatorsIdxList(List<IndicatorsIndex> indicatorsIdxList) {
+        List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> resIndicatorsIndexDataList = new ArrayList<>();
+        indicatorsIdxList.forEach(indicatorsIndex -> {
+            resIndicatorsIndexDataList.add(IndicatorsDetailUiDataResponseDto.IndicatorsIndexData.builder()
+                    .netChange(indicatorsIndex.getNetChange())
+                    .percentChange(indicatorsIndex.getPercentChange())
+                    .price(indicatorsIndex.getPrice())
+                    .asOfDate(indicatorsIndex.getAsOfDate())
+                    .build());
+        });
+        return resIndicatorsIndexDataList;
     }
 }

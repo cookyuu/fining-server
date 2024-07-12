@@ -20,6 +20,7 @@ public enum ApplicationErrorType {
     ,DATA_MATCHING_FAIL(HttpStatus.NOT_FOUND, "Fail to match Data. ")
 
     ,NOT_FOUND_STOCK(HttpStatus.NOT_FOUND, "Fail to find Stock. Stock is not exists. ")
+    ,NOT_FOUND_INDICATORS(HttpStatus.NOT_FOUND, "Fail to find Indicators. Indicators is not exists. ")
     ,NOT_FOUND_PORTFOLIO(HttpStatus.NOT_FOUND, "Fail to find Portfolio. Stock is not exists in Portfolio. ")
     ,NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "Fail to find Member. Member is not exists. ")
     ,NOT_FOUND_DATA(HttpStatus.NOT_FOUND, "Fail to find Data. ")
