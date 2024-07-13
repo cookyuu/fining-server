@@ -13,10 +13,13 @@ import com.hklim.finingserver.domain.stock.repository.StockIndexRepository;
 import com.hklim.finingserver.domain.stock.repository.StockRepository;
 import com.hklim.finingserver.domain.stock.service.StockService;
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
+import com.hklim.finingserver.domain.ui.dto.UiStockDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -63,9 +66,9 @@ public class PortfolioService {
         }
     }
 
-    public List<MainUiDataResponseDto.StockData> getPortfolioStocks(String username) {
+    public List<UiStockDataResponseDto> getPortfolioStocks(String username) {
         // 포트폴리오
-        List<MainUiDataResponseDto.StockData> portfolioDataList = new ArrayList<>();
+        List<UiStockDataResponseDto> portfolioDataList = new ArrayList<>();
         LocalDate today = LocalDate.now();
         Member member = memberService.findMemberById(Long.parseLong(username));
 
@@ -80,5 +83,11 @@ public class PortfolioService {
 
     public List<Portfolio> findAllByMember(Member member) {
         return portfolioRepository.findAllByMember(member);
+    }
+
+    public Page<Portfolio> getPortfolioStocksPagination(Member member, int pageNum) {
+        PageRequest pageRequest = PageRequest.of(pageNum-1, 10);
+        Page<Portfolio> portfolios = portfolioRepository.findAllByMember(member, pageRequest);
+        return portfolios;
     }
 }

@@ -9,6 +9,7 @@ import com.hklim.finingserver.domain.stock.entity.StockIndex;
 import com.hklim.finingserver.domain.stock.repository.StockIndexRepository;
 import com.hklim.finingserver.domain.stock.repository.StockRepository;
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
+import com.hklim.finingserver.domain.ui.dto.UiStockDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.CrawlerUtils;
@@ -95,10 +96,10 @@ public class StockService {
         return stockRepository.findBySymbol(symbol);
     }
 
-    public MainUiDataResponseDto.StockData getPortfolioStockData(Portfolio portfolio) {
+    public UiStockDataResponseDto getPortfolioStockData(Portfolio portfolio) {
         Stock stock = portfolio.getStock();
         StockIndex stockIndex = stockIndexRepository.findByStockAndAsOfDate(stock, LocalDate.now());
-        return MainUiDataResponseDto.StockData.builder()
+        return UiStockDataResponseDto.builder()
                 .stockId(stock.getId())
                 .symbol(stock.getSymbol())
                 .name(stock.getName())
@@ -109,7 +110,7 @@ public class StockService {
                 .build();
     }
 
-    public List<MainUiDataResponseDto.StockData> getTopTenStocksOfToday() {
+    public List<UiStockDataResponseDto> getTopTenStocksOfToday() {
         List<StockIndex> stockIndexList = stockIndexRepository.findTop10ByAsOfDateOrderByMarketCapDesc(LocalDate.now());
         return convertStockIndexToMainStockData(stockIndexList);
     }
@@ -124,10 +125,10 @@ public class StockService {
                 });
     }
 
-    private List<MainUiDataResponseDto.StockData> convertStockIndexToMainStockData(List<StockIndex> stockIndexList) {
-        List<MainUiDataResponseDto.StockData> mainStockDataList = new ArrayList<>();
+    private List<UiStockDataResponseDto> convertStockIndexToMainStockData(List<StockIndex> stockIndexList) {
+        List<UiStockDataResponseDto> mainStockDataList = new ArrayList<>();
         stockIndexList.forEach(stockIndex -> {
-            mainStockDataList.add(new MainUiDataResponseDto.StockData(stockIndex.getStock().getId(), stockIndex.getStock().getSymbol(),stockIndex.getStock().getName()
+            mainStockDataList.add(new UiStockDataResponseDto(stockIndex.getStock().getId(), stockIndex.getStock().getSymbol(),stockIndex.getStock().getName()
             ,stockIndex.getLastSale(), stockIndex.getMarketCap(), stockIndex.getNetChange(), stockIndex.getPercentChange()));
         });
         return mainStockDataList;

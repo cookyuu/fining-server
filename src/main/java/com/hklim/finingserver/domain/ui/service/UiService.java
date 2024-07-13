@@ -5,18 +5,19 @@ import com.hklim.finingserver.domain.indicators.entity.IndicatorsIndex;
 import com.hklim.finingserver.domain.indicators.service.CommonIndicatorsService;
 import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.service.MemberService;
+import com.hklim.finingserver.domain.portfolio.entity.Portfolio;
 import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.domain.stock.entity.Stock;
 import com.hklim.finingserver.domain.stock.entity.StockIndex;
 import com.hklim.finingserver.domain.stock.service.StockService;
-import com.hklim.finingserver.domain.ui.dto.IndicatorsDetailUiDataResponseDto;
-import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
-import com.hklim.finingserver.domain.ui.dto.MyProfileUiDataResponseDto;
-import com.hklim.finingserver.domain.ui.dto.StockDetailUiDataResponseDto;
+import com.hklim.finingserver.domain.ui.dto.*;
+import com.hklim.finingserver.global.dto.PageInfo;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import com.hklim.finingserver.global.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -32,16 +33,17 @@ public class UiService {
     private final StockService stockService;
     private final CommonIndicatorsService indicatorService;
     private final MemberService memberService;
+    private final CommonUtils commonUtils;
 
 
     public MainUiDataResponseDto getMainUiData(UserDetails user) {
-        List<MainUiDataResponseDto.StockData> resPortfolioDataList = new ArrayList<>();
+        List<UiStockDataResponseDto> resPortfolioDataList = new ArrayList<>();
         if (user != null) {
             // 포트폴리오 데이터 가져오기
             resPortfolioDataList = portfolioService.getPortfolioStocks(user.getUsername());
         }
         // 오늘 주식 Top 10 정보
-        List<MainUiDataResponseDto.StockData> resStockDataList = stockService.getTopTenStocksOfToday();
+        List<UiStockDataResponseDto> resStockDataList = stockService.getTopTenStocksOfToday();
         // 오늘 지수정보
         List<MainUiDataResponseDto.IndicatorData> resIndicatorDateList = indicatorService.getIndicatorOfToday();
         return MainUiDataResponseDto.builder()
@@ -130,5 +132,34 @@ public class UiService {
                 .phoneNumber(member.getPhoneNumber())
                 .role(member.getRole())
                 .build();
+    }
+
+    public MyPortfolioUiDataResponseDto getMyPortfolioUiData(UserDetails user, int pageNum) {
+        Member member = memberService.findMemberById(Long.valueOf(user.getUsername()));
+        Page<Portfolio> portfolioList = portfolioService.getPortfolioStocksPagination(member, pageNum);
+        PageInfo pageInfo = commonUtils.convertToPageInfo(portfolioList);
+        List<UiStockDataResponseDto> resPortfolioList = convertPortfolioToUiStockData(portfolioList.getContent());
+
+        return MyPortfolioUiDataResponseDto.builder()
+                .pageInfo(pageInfo)
+                .portfolioData(resPortfolioList)
+                .build();
+    }
+
+    private List<UiStockDataResponseDto> convertPortfolioToUiStockData(List<Portfolio> portfolioList) {
+        List<UiStockDataResponseDto> resPortfolioList = new ArrayList<>();
+        portfolioList.forEach(portfolio -> {
+            UiStockDataResponseDto stock = stockService.getPortfolioStockData(portfolio);
+            resPortfolioList.add(UiStockDataResponseDto.builder()
+                    .stockId(stock.getStockId())
+                    .symbol(stock.getSymbol())
+                    .name(stock.getName())
+                    .lastSale(stock.getLastSale())
+                    .marketCap(stock.getMarketCap())
+                    .netChange(stock.getNetChange())
+                    .percentChange(stock.getPercentChange())
+                    .build());
+        });
+        return resPortfolioList;
     }
 }

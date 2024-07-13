@@ -13,24 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MainUiDataResponseDto {
-    private List<StockData> portfolioList;
-    private List<StockData> stockList;
+    private List<UiStockDataResponseDto> portfolioList;
+    private List<UiStockDataResponseDto> stockList;
     private List<IndicatorData> indicatorDataList;
     private LocalDate asOfDate;
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class StockData {
-        private Long stockId;
-        private String symbol;
-        private String name;
-        private String lastSale;
-        private Long marketCap;
-        private String netChange;
-        private String percentChange;
-    }
 
     @Getter
     @AllArgsConstructor
