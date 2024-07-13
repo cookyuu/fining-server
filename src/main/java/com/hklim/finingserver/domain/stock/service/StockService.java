@@ -91,7 +91,7 @@ public class StockService {
     }
 
     public Stock findBySymbol(String symbol){
-        log.info("[FIND-STOCK-DATA] Find Stock data By Symbol, Symbol : {}", symbol);
+        log.debug("[FIND-STOCK-DATA] Find Stock data By Symbol, Symbol : {}", symbol);
         return stockRepository.findBySymbol(symbol);
     }
 

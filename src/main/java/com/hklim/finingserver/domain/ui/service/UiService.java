@@ -3,12 +3,15 @@ package com.hklim.finingserver.domain.ui.service;
 import com.hklim.finingserver.domain.indicators.entity.Indicators;
 import com.hklim.finingserver.domain.indicators.entity.IndicatorsIndex;
 import com.hklim.finingserver.domain.indicators.service.CommonIndicatorsService;
+import com.hklim.finingserver.domain.member.entity.Member;
+import com.hklim.finingserver.domain.member.service.MemberService;
 import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.domain.stock.entity.Stock;
 import com.hklim.finingserver.domain.stock.entity.StockIndex;
 import com.hklim.finingserver.domain.stock.service.StockService;
 import com.hklim.finingserver.domain.ui.dto.IndicatorsDetailUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
+import com.hklim.finingserver.domain.ui.dto.MyProfileUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.StockDetailUiDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
@@ -28,6 +31,7 @@ public class UiService {
     private final PortfolioService portfolioService;
     private final StockService stockService;
     private final CommonIndicatorsService indicatorService;
+    private final MemberService memberService;
 
 
     public MainUiDataResponseDto getMainUiData(UserDetails user) {
@@ -112,5 +116,19 @@ public class UiService {
                     .build());
         });
         return resIndicatorsIndexDataList;
+    }
+
+    public MyProfileUiDataResponseDto getMyProfileUiData(UserDetails user) {
+        Member member = memberService.findMemberById(Long.valueOf(user.getUsername()));
+        if (member == null) {
+            throw new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER, "[MY-PROFILE-UI-DATA] Not found member profile data in that token.");
+        }
+        return MyProfileUiDataResponseDto.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .role(member.getRole())
+                .build();
     }
 }

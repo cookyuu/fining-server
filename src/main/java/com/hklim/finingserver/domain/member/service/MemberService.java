@@ -13,7 +13,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public Member findMemberById(Long id) {
-        return memberRepository.findById(id).orElseThrow(() ->
+        Member member = memberRepository.findById(id).orElseThrow(() ->
                 new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
+        validateWithdrawnMember(member);
+        return member;
+    }
+
+    private void validateWithdrawnMember(Member member) {
+        if (member.isDeleted()) {
+            throw new ApplicationErrorException(ApplicationErrorType.ALREADY_WITHDRAWN_MEMBER, "[FIND-MEMBER-DATA] This member is already Withdrawn");
+        }
     }
 }

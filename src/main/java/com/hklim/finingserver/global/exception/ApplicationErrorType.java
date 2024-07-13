@@ -18,6 +18,7 @@ public enum ApplicationErrorType {
     ,AUTHCODE_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to send Auth Code")
     ,FAIL_TO_SAVE_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to save Data")
     ,DATA_MATCHING_FAIL(HttpStatus.NOT_FOUND, "Fail to match Data. ")
+    ,ALREADY_WITHDRAWN_MEMBER(HttpStatus.BAD_REQUEST, "Already withdrawn member.")
 
     ,NOT_FOUND_STOCK(HttpStatus.NOT_FOUND, "Fail to find Stock. Stock is not exists. ")
     ,NOT_FOUND_INDICATORS(HttpStatus.NOT_FOUND, "Fail to find Indicators. Indicators is not exists. ")
