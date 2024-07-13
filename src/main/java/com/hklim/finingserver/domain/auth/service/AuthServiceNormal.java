@@ -4,6 +4,8 @@ import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.entity.RoleType;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
+import com.hklim.finingserver.domain.member.service.MemberService;
+import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +61,8 @@ public class AuthServiceNormal implements AuthService {
     private final JwtUtils jwtUtils;
     private final RedisUtils redisUtils;
     private final CookieUtils cookieUtils;
+    private final MemberService memberService;
+    private final PortfolioService portfolioService;
 
     @Override
     @Transactional
@@ -124,9 +129,7 @@ public class AuthServiceNormal implements AuthService {
         } catch (RedisException e) {
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_LOGOUT, "[LOGOUT PROCESS] Logout failed. Please try again.");
         } finally {
-            Cookie cookie = new Cookie("refresh_token", null);
-            cookie.setMaxAge(0);
-            response.addCookie(cookie);
+            cookieUtils.removeCookie("refresh_token", response);
         }
         log.info("[LOGOUT PROCESS] Set accessToken to logout token list, END");
     }
@@ -179,6 +182,32 @@ public class AuthServiceNormal implements AuthService {
             redisUtils.deleteData(RedisKeyType.REFRESH_TOKEN.getSeparator()+userEmail);
             throw new ApplicationErrorException(ApplicationErrorType.FAIL_JWT_REISSUE, "[REISSUE-TOKEN] Refresh Token does not match. Please login again. ");
         }
+    }
+
+
+    @Override
+    @Transactional
+    public void withdrawalMember(UserDetails user, HttpServletRequest request, HttpServletResponse response) {
+        String accessToken = "";
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7);
+        } else {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_WITHDRAWAL_MEMBER, "[WITHDRAWAL-MEMBER] Access Token is Empty. ");
+        }
+
+        try {
+            redisUtils.setDataExpire(RedisKeyType.LOGOUT_TOKEN.getSeparator()+accessToken, String.valueOf(true), Long.parseLong(logoutExpTime));
+        } catch (RedisException e) {
+            throw new ApplicationErrorException(ApplicationErrorType.FAIL_WITHDRAWAL_MEMBER, "[WITHDRAWAL-MEMBER] Fail to resist redis, Unavailable token. Please try again.");
+        } finally {
+            cookieUtils.removeCookie("refresh_token", response);
+        }
+
+        Member member = memberService.findMemberById(Long.valueOf(user.getUsername()));
+        member.withdrawal();
+        portfolioService.withdrawalMember(member);
+        memberService.saveMember(member);
     }
 
 

@@ -10,6 +10,7 @@ import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
 import com.hklim.finingserver.domain.stock.entity.Stock;
 import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
+import com.hklim.finingserver.domain.ui.dto.UiStockDataResponseDto;
 import com.hklim.finingserver.global.dto.ResponseDto;
 import com.hklim.finingserver.global.utils.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -105,16 +106,16 @@ class StockServiceTest {
         Member member = memberService.findMemberById(3L);
         List<Portfolio> portfolioList = portfolioService.findAllByMember(member);
         for (Portfolio portfolio : portfolioList) {
-            MainUiDataResponseDto.StockData data = stockService.getPortfolioStockData(portfolio);
+            UiStockDataResponseDto data = stockService.getPortfolioStockData(portfolio);
             log.info("Symbol : {}, Name : {}, LastPrice : {}, percent : {}%", data.getSymbol(), data.getName(), data.getLastSale(), data.getPercentChange());
         }
     }
 
     @Test
     public void getTopSixStocksOfTodayTest() {
-        List<MainUiDataResponseDto.StockData> stockDataList = stockService.getTopTenStocksOfToday();
+        List<UiStockDataResponseDto> stockDataList = stockService.getTopTenStocksOfToday();
         log.info("Data Cnt : {}", stockDataList.size());
-        for (MainUiDataResponseDto.StockData stockData : stockDataList) {
+        for (UiStockDataResponseDto stockData : stockDataList) {
             log.info("Symbol : {}, Name : {}, MarketCap : {}, LastSale : {}, PercentChange : {}", stockData.getSymbol(), stockData.getName(),stockData.getMarketCap(), stockData.getLastSale(),stockData.getPercentChange());
 
         }

@@ -55,4 +55,9 @@ public class Member extends BaseEntity {
     public void updateTempPw(String tempPw) {
         this.password = tempPw;
     }
+
+    public void withdrawal() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }

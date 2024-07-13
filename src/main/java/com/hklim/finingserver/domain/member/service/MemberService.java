@@ -24,4 +24,8 @@ public class MemberService {
             throw new ApplicationErrorException(ApplicationErrorType.ALREADY_WITHDRAWN_MEMBER, "[FIND-MEMBER-DATA] This member is already Withdrawn");
         }
     }
+
+    public void saveMember(Member member) {
+        memberRepository.save(member);
+    }
 }

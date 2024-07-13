@@ -92,34 +92,6 @@ public class UiService {
                 .build();
     }
 
-    private List<StockDetailUiDataResponseDto.StockDetailIndexData> convertToUiStockIdxList(List<StockIndex> stockIdxList) {
-        log.info("[CONVERT-UI-DATA] Convert to UI Stock Index List");
-        List<StockDetailUiDataResponseDto.StockDetailIndexData> detailIndexDataList = new ArrayList<>();
-        stockIdxList.forEach(stockData -> {
-            detailIndexDataList.add(StockDetailUiDataResponseDto.StockDetailIndexData.builder()
-                    .lastSale(stockData.getLastSale())
-                    .marketCap(stockData.getMarketCap())
-                    .netChange(stockData.getNetChange())
-                    .percentChange(stockData.getPercentChange())
-                    .asOfDate(stockData.getAsOfDate())
-                    .build());
-        });
-        return detailIndexDataList;
-    }
-
-    private List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> convertToUiIndicatorsIdxList(List<IndicatorsIndex> indicatorsIdxList) {
-        List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> resIndicatorsIndexDataList = new ArrayList<>();
-        indicatorsIdxList.forEach(indicatorsIndex -> {
-            resIndicatorsIndexDataList.add(IndicatorsDetailUiDataResponseDto.IndicatorsIndexData.builder()
-                    .netChange(indicatorsIndex.getNetChange())
-                    .percentChange(indicatorsIndex.getPercentChange())
-                    .price(indicatorsIndex.getPrice())
-                    .asOfDate(indicatorsIndex.getAsOfDate())
-                    .build());
-        });
-        return resIndicatorsIndexDataList;
-    }
-
     public MyProfileUiDataResponseDto getMyProfileUiData(UserDetails user) {
         Member member = memberService.findMemberById(Long.valueOf(user.getUsername()));
         if (member == null) {
@@ -144,6 +116,34 @@ public class UiService {
                 .pageInfo(pageInfo)
                 .portfolioData(resPortfolioList)
                 .build();
+    }
+
+    private List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> convertToUiIndicatorsIdxList(List<IndicatorsIndex> indicatorsIdxList) {
+        List<IndicatorsDetailUiDataResponseDto.IndicatorsIndexData> resIndicatorsIndexDataList = new ArrayList<>();
+        indicatorsIdxList.forEach(indicatorsIndex -> {
+            resIndicatorsIndexDataList.add(IndicatorsDetailUiDataResponseDto.IndicatorsIndexData.builder()
+                    .netChange(indicatorsIndex.getNetChange())
+                    .percentChange(indicatorsIndex.getPercentChange())
+                    .price(indicatorsIndex.getPrice())
+                    .asOfDate(indicatorsIndex.getAsOfDate())
+                    .build());
+        });
+        return resIndicatorsIndexDataList;
+    }
+
+    private List<StockDetailUiDataResponseDto.StockDetailIndexData> convertToUiStockIdxList(List<StockIndex> stockIdxList) {
+        log.info("[CONVERT-UI-DATA] Convert to UI Stock Index List");
+        List<StockDetailUiDataResponseDto.StockDetailIndexData> detailIndexDataList = new ArrayList<>();
+        stockIdxList.forEach(stockData -> {
+            detailIndexDataList.add(StockDetailUiDataResponseDto.StockDetailIndexData.builder()
+                    .lastSale(stockData.getLastSale())
+                    .marketCap(stockData.getMarketCap())
+                    .netChange(stockData.getNetChange())
+                    .percentChange(stockData.getPercentChange())
+                    .asOfDate(stockData.getAsOfDate())
+                    .build());
+        });
+        return detailIndexDataList;
     }
 
     private List<UiStockDataResponseDto> convertPortfolioToUiStockData(List<Portfolio> portfolioList) {

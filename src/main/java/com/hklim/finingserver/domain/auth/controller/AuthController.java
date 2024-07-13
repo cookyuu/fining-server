@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -62,5 +64,11 @@ public class AuthController {
     @PostMapping("/inquiry/pw")
     public ResponseEntity<ResponseDto<InquiryPwResponseDto>> inquiryPw(@RequestBody InquiryPwRequestDto inquiryPwInfo) {
         return ResponseDto.ok(authServiceNormal.inquiryPw(inquiryPwInfo));
+    }
+
+    @PostMapping("/withdrawal")
+    public ResponseEntity<ResponseDto<String>> withdrawalMember(@AuthenticationPrincipal UserDetails user, HttpServletRequest request, HttpServletResponse response) {
+        authServiceNormal.withdrawalMember(user, request, response);
+        return ResponseDto.ok("회원 탈퇴 완료.");
     }
 }

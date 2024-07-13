@@ -19,4 +19,6 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     List<Portfolio> findAllByMember(Member member);
 
     Page<Portfolio> findAllByMember(Member member, PageRequest pageRequest);
+
+    void deleteAllByMember(Member member);
 }

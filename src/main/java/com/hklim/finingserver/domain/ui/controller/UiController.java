@@ -32,7 +32,6 @@ public class UiController {
     public ResponseEntity<ResponseDto<MyProfileUiDataResponseDto>> getMyProfileUiData(@AuthenticationPrincipal UserDetails user) {
         return ResponseDto.ok(uiService.getMyProfileUiData(user));
     }
-
     @GetMapping("/my/portfolio")
     public ResponseEntity<ResponseDto<MyPortfolioUiDataResponseDto>> getMyPortfolioUiData(@AuthenticationPrincipal UserDetails user, @RequestParam("pageNum") int pageNum) {
         return ResponseDto.ok(uiService.getMyPortfolioUiData(user, pageNum));

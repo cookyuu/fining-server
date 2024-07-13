@@ -16,6 +16,7 @@ import com.hklim.finingserver.domain.ui.dto.MainUiDataResponseDto;
 import com.hklim.finingserver.domain.ui.dto.UiStockDataResponseDto;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -67,14 +68,11 @@ public class PortfolioService {
     }
 
     public List<UiStockDataResponseDto> getPortfolioStocks(String username) {
-        // 포트폴리오
         List<UiStockDataResponseDto> portfolioDataList = new ArrayList<>();
-        LocalDate today = LocalDate.now();
         Member member = memberService.findMemberById(Long.parseLong(username));
 
-        // portfolios 조회할때
-        List<Portfolio> portfolios = portfolioRepository.findAllByMember(member);
-
+        log.info("[FIND-PORTFOLIO-INFO] Find personal portfolio data.");
+        List<Portfolio> portfolios = findAllByMember(member);
         portfolios.forEach(portfolio ->
                 portfolioDataList.add(stockService.getPortfolioStockData(portfolio))
                 );
@@ -86,8 +84,13 @@ public class PortfolioService {
     }
 
     public Page<Portfolio> getPortfolioStocksPagination(Member member, int pageNum) {
+        log.info("[FIND-PORTFOLIO-INFO] Find personal pagination portfolio data.");
         PageRequest pageRequest = PageRequest.of(pageNum-1, 10);
         Page<Portfolio> portfolios = portfolioRepository.findAllByMember(member, pageRequest);
         return portfolios;
+    }
+
+    public void withdrawalMember(Member member) {
+        portfolioRepository.deleteAllByMember(member);
     }
 }

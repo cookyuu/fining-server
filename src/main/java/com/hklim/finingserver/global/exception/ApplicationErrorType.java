@@ -15,8 +15,8 @@ public enum ApplicationErrorType {
     ,DATA_DUPLICATED_ERROR(HttpStatus.BAD_REQUEST, "Data is Duplicated")
     ,DATA_ENCRPYT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to Encrypt Data. " )
 
-    ,AUTHCODE_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to send Auth Code")
-    ,FAIL_TO_SAVE_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to save Data")
+    ,AUTHCODE_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to send Auth Code. ")
+    ,FAIL_TO_SAVE_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to save Data. ")
     ,DATA_MATCHING_FAIL(HttpStatus.NOT_FOUND, "Fail to match Data. ")
     ,ALREADY_WITHDRAWN_MEMBER(HttpStatus.BAD_REQUEST, "Already withdrawn member.")
 
@@ -31,7 +31,8 @@ public enum ApplicationErrorType {
     ,FAIL_JWT_LOGOUT(HttpStatus.INTERNAL_SERVER_ERROR, "JWT token logout Failure. ")
     ,FAIL_JWT_VALIDATION(HttpStatus.UNAUTHORIZED, "Fail to validate JWT Token. ")
     ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ")
-    ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during crawling process. ");
+    ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during crawling process. ")
+    ,FAIL_WITHDRAWAL_MEMBER(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to withdrawal member. ");
 
 
 

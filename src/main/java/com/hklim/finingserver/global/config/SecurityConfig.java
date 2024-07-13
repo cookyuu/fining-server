@@ -34,9 +34,8 @@ public class SecurityConfig {
     private static final String[] AUTH_ADMIN = {
             "/api/v1/stock/scrap/**", "/api/v1/indicator/scrap/**", "/api/v1/auth/logout"
     };
-
     private static final String[] AUTH_USER = {
-            "/api/v1/auth/logout", "/api/v1/portfolio/**"
+            "/api/v1/auth/logout", "/api/v1/portfolio/**", "/api/v1/ui/my/**"
     };
 
 

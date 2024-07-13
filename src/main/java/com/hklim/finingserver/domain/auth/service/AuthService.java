@@ -5,6 +5,7 @@ import com.hklim.finingserver.domain.auth.dto.AccessTokenResponseDto;
 import com.hklim.finingserver.domain.auth.dto.SignupRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AuthService {
     Long signup(SignupRequestDto signupInfo);
@@ -14,4 +15,6 @@ public interface AuthService {
     void logout(String accessToken, HttpServletResponse response);
 
     AccessTokenResponseDto reissueAccessToken(HttpServletRequest request);
+
+    void withdrawalMember(UserDetails user, HttpServletRequest request, HttpServletResponse response);
 }
