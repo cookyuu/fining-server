@@ -66,9 +66,5 @@ public class AuthController {
         return ResponseDto.ok(authServiceNormal.inquiryPw(inquiryPwInfo));
     }
 
-    @PostMapping("/withdrawal")
-    public ResponseEntity<ResponseDto<String>> withdrawalMember(@AuthenticationPrincipal UserDetails user, HttpServletRequest request, HttpServletResponse response) {
-        authServiceNormal.withdrawalMember(user, request, response);
-        return ResponseDto.ok("회원 탈퇴 완료.");
-    }
+
 }

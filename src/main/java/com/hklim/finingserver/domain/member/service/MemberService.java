@@ -1,10 +1,12 @@
 package com.hklim.finingserver.domain.member.service;
 
+import com.hklim.finingserver.domain.member.dto.UpdateMemberRequestDto;
 import com.hklim.finingserver.domain.member.entity.Member;
 import com.hklim.finingserver.domain.member.repository.MemberRepository;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,5 +29,11 @@ public class MemberService {
 
     public void saveMember(Member member) {
         memberRepository.save(member);
+    }
+
+    public void updateMember(UserDetails user, UpdateMemberRequestDto updateMemberInfo) {
+        Member member = findMemberById(Long.valueOf(user.getUsername()));
+        member.updateInfo(updateMemberInfo.getName(),updateMemberInfo.getPhoneNumber());
+        saveMember(member);
     }
 }
