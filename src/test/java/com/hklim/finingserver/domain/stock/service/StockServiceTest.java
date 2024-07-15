@@ -121,6 +121,11 @@ class StockServiceTest {
         }
     }
 
+    @Test
+    public void searchStockData() {
+        stockService.searchStockData("???");
+    }
+
     private StockDataResponseDto toTotalStockDataDto(String stockData) {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         StockDataResponseDto data = new StockDataResponseDto();

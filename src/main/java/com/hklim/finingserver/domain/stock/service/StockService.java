@@ -2,6 +2,7 @@ package com.hklim.finingserver.domain.stock.service;
 
 import com.hklim.finingserver.domain.portfolio.entity.Portfolio;
 import com.hklim.finingserver.domain.stock.dto.InsertStockDataRequestDto;
+import com.hklim.finingserver.domain.stock.dto.SearchStockDataResponseDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataFromCSVDto;
 import com.hklim.finingserver.domain.stock.dto.StockDataResponseDto;
 import com.hklim.finingserver.domain.stock.entity.Stock;
@@ -142,5 +143,30 @@ public class StockService {
         List<StockIndex> stockIndexList = stockIndexRepository.findAllByStock(stock);
         log.info("[FIND-STOCK-INDEX-ALL] Find Stock Index Cnt : {}, Symbol : {}",stockIndexList.size(), stock.getSymbol());
         return stockIndexList;
+    }
+
+    public SearchStockDataResponseDto searchStockData(String keyword) {
+        log.info("[SEARCH-STOCK] Searching stock data by keyword");
+        List<Stock> stockList = stockRepository.findByNameContainingOrSymbolContaining(keyword, keyword);
+        return convertToSearchStockDataResponse(stockList);
+    }
+
+    private SearchStockDataResponseDto convertToSearchStockDataResponse(List<Stock> stockList) {
+        log.info("[SEARCH-STOCK] Converting to response stock data");
+        int searchDataCnt = stockList.size();
+        log.info("[SEARCH-STOCK] Search data cnt : {}", searchDataCnt);
+        List<SearchStockDataResponseDto.StockData> resStockData = new ArrayList<>();
+            stockList.forEach(stock -> {
+                resStockData.add(
+                        SearchStockDataResponseDto.StockData.builder()
+                                .name(stock.getName())
+                                .symbol(stock.getSymbol())
+                                .build());
+            });
+
+        return SearchStockDataResponseDto.builder()
+                .searchCnt(searchDataCnt)
+                .stockDataList(resStockData)
+                .build();
     }
 }

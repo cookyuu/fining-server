@@ -1,6 +1,7 @@
 package com.hklim.finingserver.domain.stock.controller;
 
 import com.hklim.finingserver.domain.stock.dto.InsertStockDataRequestDto;
+import com.hklim.finingserver.domain.stock.dto.SearchStockDataResponseDto;
 import com.hklim.finingserver.domain.stock.service.StockService;
 import com.hklim.finingserver.global.dto.ResponseDto;
 import lombok.Getter;
@@ -30,5 +31,10 @@ public class StockController {
     public ResponseEntity<ResponseDto<String>> scrapStockIndex() {
         stockService.insertTotalData();
             return ResponseDto.ok("주식 데이터 크롤링 성공");
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseDto<SearchStockDataResponseDto>> searchStockData(@RequestParam(value = "keyword") String keyword) {
+        return ResponseDto.ok(stockService.searchStockData(keyword));
     }
 }
