@@ -34,8 +34,6 @@ public enum ApplicationErrorType {
     ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during crawling process. ")
     ,FAIL_WITHDRAWAL_MEMBER(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to withdrawal member. ");
 
-
-
     private HttpStatus httpStatus;
     private String message;
 

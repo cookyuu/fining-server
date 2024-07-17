@@ -1,6 +1,9 @@
 package com.hklim.finingserver.global.exception;
 
 import com.hklim.finingserver.global.dto.ErrorResponseDto;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +69,28 @@ public class GlobalExceptionHandler {
         log.error("[DateTimeParseException] {}", e.getMessage());
         var response = new ErrorResponseDto(ApplicationErrorType.FAIL_DATATIME_PARSE.name(), e.getMessage());
         return new ResponseEntity<>(response, ApplicationErrorType.INVALID_DATA_ARGUMENT.getHttpStatus());
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Object> handleSignatureException(WebRequest request, SignatureException e) {
+        log.error("[SignatureException] {}", e.getMessage());
+        var response = new ErrorResponseDto(ApplicationErrorType.FAIL_JWT_VALIDATION.name(), e.getMessage());
+        return new ResponseEntity<>(response, ApplicationErrorType.FAIL_JWT_VALIDATION.getHttpStatus());
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("토큰이 유효하지 않습니다."));
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<Object> handleMalformedJwtException(WebRequest request, MalformedJwtException e) {
+        log.error("[MalformedJwtException] {}", e.getMessage());
+        var response = new ErrorResponseDto(ApplicationErrorType.FAIL_JWT_VALIDATION.name(), e.getMessage());
+        return new ResponseEntity<>(response, ApplicationErrorType.FAIL_JWT_VALIDATION.getHttpStatus());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwtException(WebRequest request, ExpiredJwtException e) {
+        log.error("[ExpiredJwtException] {}", e.getMessage());
+        var response = new ErrorResponseDto(ApplicationErrorType.FAIL_JWT_VALIDATION.name(), e.getMessage());
+        return new ResponseEntity<>(response, ApplicationErrorType.FAIL_JWT_VALIDATION.getHttpStatus());
     }
 
     @ExceptionHandler

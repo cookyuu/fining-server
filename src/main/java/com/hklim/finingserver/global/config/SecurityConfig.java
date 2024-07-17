@@ -53,7 +53,7 @@ public class SecurityConfig {
 
         http.addFilterBefore(new JwtAuthFilter(customUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class);
 
-        http.exceptionHandling((exceptionHandler) -> exceptionHandler
+        http.exceptionHandling(exceptionHandler -> exceptionHandler
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler));
 

@@ -31,23 +31,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        logger.debug("[VALIDATE-TOKEN] Check AccessToken. ");
-        String authorizationHeader = request.getHeader("Authorization");
-        logger.info("[VALIDATE-TOKEN] Authorization Code : " + authorizationHeader);
+        try {
+            logger.debug("[VALIDATE-TOKEN] Check AccessToken. ");
+            String authorizationHeader = request.getHeader("Authorization");
+            logger.info("[VALIDATE-TOKEN] Authorization Code : " + authorizationHeader);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String accessToken = authorizationHeader.substring(7);
-            if (jwtUtils.validateToken(accessToken)) {
-                Long userId = jwtUtils.getUserId(accessToken);
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
-                if (userDetails != null) {
-                    // UserDetails, Password, Role - 접근 권한 인증 Token 생성
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
-                    // Request의 Security Context에 접근 권한 설정
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String accessToken = authorizationHeader.substring(7);
+                if (jwtUtils.validateToken(accessToken)) {
+                    Long userId = jwtUtils.getUserId(accessToken);
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
+                    if (userDetails != null) {
+                        // UserDetails, Password, Role - 접근 권한 인증 Token 생성
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
+                        // Request의 Security Context에 접근 권한 설정
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    }
                 }
             }
+        } catch (Exception e) {
+            request.setAttribute("exception", e);
         }
         filterChain.doFilter(request, response);
     }
