@@ -52,8 +52,8 @@ public class Member extends BaseEntity {
         this.role = RoleType.USER;
     }
 
-    public void updateTempPw(String tempPw) {
-        this.password = tempPw;
+    public void updatePw(String newPw) {
+        this.password = newPw;
     }
 
     public void withdrawal() {

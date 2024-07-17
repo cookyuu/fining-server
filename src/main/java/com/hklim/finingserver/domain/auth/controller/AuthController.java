@@ -4,13 +4,10 @@ import com.hklim.finingserver.domain.auth.dto.*;
 import com.hklim.finingserver.domain.auth.service.AuthServiceNormal;
 import com.hklim.finingserver.domain.auth.service.MailService;
 import com.hklim.finingserver.global.dto.ResponseDto;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -65,6 +62,5 @@ public class AuthController {
     public ResponseEntity<ResponseDto<InquiryPwResponseDto>> inquiryPw(@RequestBody InquiryPwRequestDto inquiryPwInfo) {
         return ResponseDto.ok(authServiceNormal.inquiryPw(inquiryPwInfo));
     }
-
 
 }

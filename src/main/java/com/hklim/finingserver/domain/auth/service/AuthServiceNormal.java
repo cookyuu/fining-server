@@ -9,6 +9,7 @@ import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
+import com.hklim.finingserver.global.utils.AuthUtils;
 import com.hklim.finingserver.global.utils.CookieUtils;
 import com.hklim.finingserver.global.utils.JwtUtils;
 import com.hklim.finingserver.global.utils.RedisUtils;
@@ -20,9 +21,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -57,8 +56,8 @@ public class AuthServiceNormal implements AuthService {
     };
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final AuthUtils authUtils;
     private final RedisUtils redisUtils;
     private final CookieUtils cookieUtils;
     private final MemberService memberService;
@@ -72,7 +71,7 @@ public class AuthServiceNormal implements AuthService {
 
         SignupRequestDto saveInfo = SignupRequestDto.builder()
                 .email(signupInfo.getEmail())
-                .password(passwordEncoder.encode(signupInfo.getPassword()))
+                .password(authUtils.encPassword(signupInfo.getPassword()))
                 .name(signupInfo.getName())
                 .phoneNumber(signupInfo.getPhoneNumber())
                 .build();
@@ -90,9 +89,8 @@ public class AuthServiceNormal implements AuthService {
                 new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
         log.info("[NORMAL-LOGIN] Find Member email : {}", member.getEmail());
 
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new BadCredentialsException("Password is not matched");
-        }
+        authUtils.checkPassword(member.getPassword(), password);
+
         JwtUserInfo userInfo = new JwtUserInfo();
         userInfo.toDto(member);
 
@@ -245,8 +243,8 @@ public class AuthServiceNormal implements AuthService {
                 () -> new ApplicationErrorException(ApplicationErrorType.NOT_FOUND_MEMBER));
 
         String tempPw = createTemporaryPw(tempPwLength);
-        String encTempPw = passwordEncoder.encode(tempPw);
-        member.updateTempPw(encTempPw);
+        String encTempPw = authUtils.encPassword(tempPw);
+        member.updatePw(encTempPw);
         memberRepository.save(member);
         InquiryPwResponseDto res = new InquiryPwResponseDto(tempPw);
         return res;
