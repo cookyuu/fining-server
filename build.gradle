@@ -58,6 +58,9 @@ dependencies {
 	// jsoup, 웹사이트 크롤링
 	implementation 'org.jsoup:jsoup:1.17.2'
 
+	// spring batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+
 
 }
 
