@@ -20,12 +20,17 @@ public class BatchJobConfig {
     private final StockIndicatorsService stockIndicatorsService;
     private final BondIndicatorsService bondIndicatorsService;
 
-    @Bean(name = "crawlingJob")
-    public Job crawlingJob(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager) {
-        return new JobBuilder("crawlingJob", jobRepository)
+    @Bean(name = "stockCrawlingJob")
+    public Job stockCrawlingJob(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager) {
+        return new JobBuilder("stockCrawlingJob", jobRepository)
                 .start(stockCrawlingStep(jobRepository, platformTransactionManager))
-                .on("*")
-                .to(stockIndicatorsCrawlingStep(jobRepository, platformTransactionManager))
+                .build();
+    }
+
+    @Bean(name = "indicatorsCrawlingJob")
+    public Job indicatorsCrawlingJob(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager) {
+        return new JobBuilder("indicatorsCrawlingJob", jobRepository)
+                .start(stockIndicatorsCrawlingStep(jobRepository, platformTransactionManager))
                 .on("*")
                 .to(bondIndicatorsCrawlingStep(jobRepository, platformTransactionManager))
                 .end()

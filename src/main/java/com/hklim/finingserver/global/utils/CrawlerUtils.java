@@ -69,7 +69,7 @@ public class CrawlerUtils {
         ObjectMapper mapper = new ObjectMapper();
         SingleStockDataResponseDto data = new SingleStockDataResponseDto();
         try {
-            log.info("[STOCK-CRAWLING] Convert Data to Dto. ");
+            log.debug("[STOCK-CRAWLING] Convert Data to Dto. ");
             data = mapper.readValue(stockData, SingleStockDataResponseDto.class);
         } catch (JsonProcessingException e) {
             log.info("[STOCK-CRAWLING] Fail to Crawling from URL. error msg : {} ", e.getMessage());
