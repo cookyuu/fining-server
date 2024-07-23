@@ -32,7 +32,8 @@ public enum ApplicationErrorType {
     ,FAIL_JWT_VALIDATION(HttpStatus.UNAUTHORIZED, "Fail to validate JWT Token. ")
     ,FAIL_DATATIME_PARSE(HttpStatus.BAD_REQUEST, "Fail to parse DateTime. String convert to LocalDate. ")
     ,FAIL_CRAWLING_SAVE(HttpStatus.BAD_REQUEST, "Fail to save data during crawling process. ")
-    ,FAIL_WITHDRAWAL_MEMBER(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to withdrawal member. ");
+    ,FAIL_WITHDRAWAL_MEMBER(HttpStatus.INTERNAL_SERVER_ERROR, "Fail to withdrawal member. ")
+    ,FORMAT_VERIFY_ERROR(HttpStatus.BAD_REQUEST, "Data format is unavailable. ");
 
     private HttpStatus httpStatus;
     private String message;

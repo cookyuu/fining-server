@@ -9,10 +9,7 @@ import com.hklim.finingserver.domain.portfolio.service.PortfolioService;
 import com.hklim.finingserver.global.entity.RedisKeyType;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
-import com.hklim.finingserver.global.utils.AuthUtils;
-import com.hklim.finingserver.global.utils.CookieUtils;
-import com.hklim.finingserver.global.utils.JwtUtils;
-import com.hklim.finingserver.global.utils.RedisUtils;
+import com.hklim.finingserver.global.utils.*;
 import io.lettuce.core.RedisException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,13 +59,14 @@ public class AuthServiceNormal implements AuthService {
     private final CookieUtils cookieUtils;
     private final MemberService memberService;
     private final PortfolioService portfolioService;
+    private final VerifyUtils verifyUtils;
 
     @Override
     @Transactional
     public Long signup(SignupRequestDto signupInfo) {
         log.info("[SIGNUP PROCESS] START");
+        verifySignupInfo(signupInfo.getEmail(), signupInfo.getPhoneNumber(), signupInfo.getPassword());
         chkSignupValidation(signupInfo.getEmail());
-
         SignupRequestDto saveInfo = SignupRequestDto.builder()
                 .email(signupInfo.getEmail())
                 .password(authUtils.encPassword(signupInfo.getPassword()))
@@ -216,6 +214,12 @@ public class AuthServiceNormal implements AuthService {
                     "[SIGNUP-PROCESS] Email is Duplicated, Please check again.");
         }
         log.info("[SIGNUP-PROCESS] Validation Check, SUCCESS! ");
+    }
+
+    private void verifySignupInfo(String email, String phoneNumber, String password) {
+        verifyUtils.isAvailableEmailFormat(email);
+        verifyUtils.isAvailablePhoneNumberFormat(phoneNumber);
+        verifyUtils.isAvailablePasswordFormat(password);
     }
 
     public InquiryEmailResponseDto inquiryEmail(InquiryEmailRequestDto inquiryEmailInfo) {

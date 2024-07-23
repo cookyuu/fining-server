@@ -7,6 +7,7 @@ import com.hklim.finingserver.domain.member.repository.MemberRepository;
 import com.hklim.finingserver.global.exception.ApplicationErrorException;
 import com.hklim.finingserver.global.exception.ApplicationErrorType;
 import com.hklim.finingserver.global.utils.AuthUtils;
+import com.hklim.finingserver.global.utils.VerifyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final AuthUtils authUtils;
+    private final VerifyUtils verifyUtils;
 
     public Member findMemberById(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(() ->
@@ -37,6 +39,7 @@ public class MemberService {
     }
 
     public void updateMember(UserDetails user, UpdateMemberRequestDto updateMemberInfo) {
+        verifyUtils.isAvailablePhoneNumberFormat(updateMemberInfo.getPhoneNumber());
         Member member = findMemberById(Long.valueOf(user.getUsername()));
         member.updateInfo(updateMemberInfo.getName(),updateMemberInfo.getPhoneNumber());
         saveMember(member);
@@ -46,6 +49,7 @@ public class MemberService {
         Member member = findMemberById(Long.valueOf(user.getUsername()));
         authUtils.checkPassword(member.getPassword(), updateMemberPwInfo.getPassword());
         checkEqualNewPw(updateMemberPwInfo.getNewPassword(), updateMemberPwInfo.getNewPasswordChk());
+        verifyUtils.isAvailablePasswordFormat(updateMemberPwInfo.getNewPassword());
         member.updatePw(authUtils.encPassword(updateMemberPwInfo.getNewPassword()));
         log.info("[UPDATE-PW] Update new password. member email : {}", member.getEmail());
         memberRepository.save(member);
