@@ -8,6 +8,7 @@ class FiningServerApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
