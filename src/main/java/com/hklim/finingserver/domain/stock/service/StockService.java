@@ -140,7 +140,7 @@ public class StockService {
     }
 
     public List<StockIndex> getAllIndexOfStock(Stock stock) {
-        List<StockIndex> stockIndexList = stockIndexRepository.findAllByStock(stock);
+        List<StockIndex> stockIndexList = stockIndexRepository.findAllByStockOrderByAsOfDateDesc(stock);
         log.info("[FIND-STOCK-INDEX-ALL] Find Stock Index Cnt : {}, Symbol : {}",stockIndexList.size(), stock.getSymbol());
         return stockIndexList;
     }
