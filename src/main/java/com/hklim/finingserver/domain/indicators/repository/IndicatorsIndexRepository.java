@@ -13,5 +13,5 @@ public interface IndicatorsIndexRepository extends JpaRepository<IndicatorsIndex
 
     List<IndicatorsIndex> findAllByAsOfDate(LocalDate now);
 
-    List<IndicatorsIndex> findAllByIndicators(Indicators indicators);
+    List<IndicatorsIndex> findAllByIndicatorsOrderByAsOfDateDesc(Indicators indicators);
 }

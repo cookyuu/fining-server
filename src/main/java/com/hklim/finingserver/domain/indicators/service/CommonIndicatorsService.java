@@ -49,7 +49,7 @@ public abstract class CommonIndicatorsService {
     }
 
     public List<IndicatorsIndex> getAllIndexOfIndicators(Indicators indicators) {
-        List<IndicatorsIndex> indicatorsIndexList = indicatorsIndexRepository.findAllByIndicators(indicators);
+        List<IndicatorsIndex> indicatorsIndexList = indicatorsIndexRepository.findAllByIndicatorsOrderByAsOfDateDesc(indicators);
         log.info("[FIND-STOCK-INDEX-ALL] Find Stock Index Cnt : {}, Symbol : {}",indicatorsIndexList.size(), indicators.getSymbol());
         return indicatorsIndexList;
     }
